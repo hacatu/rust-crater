@@ -4,6 +4,8 @@ use num_traits::NumRef;
 
 use rand::{distributions::{uniform::SampleUniform, Distribution, Uniform}, Rng};
 
+
+
 pub trait KdPoint: Sized {
     type Distance: Ord;
     fn sqdist(&self, other: &Self) -> Self::Distance;
@@ -18,6 +20,8 @@ pub trait KdRegion: Sized {
     fn min_sqdist(&self, point: &Self::Point) -> <Self::Point as KdPoint>::Distance;
 }
 
+
+
 pub struct KdTree<R: KdRegion> {
     pub bounds: Option<R>,
     points: Vec<R::Point>
@@ -29,18 +33,22 @@ pub enum WalkDecision {
     Stop
 }
 
-pub fn get_bounds<'a, R: KdRegion>(points: impl IntoIterator<Item = &'a R::Point>) -> Option<R> where R: 'a {
-    let mut it = points.into_iter();
-    let mut res = R::single_point(it.next()?);
-    for p in it {
-        res.extend(p);
-    }
-    Some(res)
-}
-
 pub struct MmHeap<T> {
     buf: Vec<T>
 }
+
+#[derive(Clone, Debug)]
+pub struct CuPoint<T: Ord + Clone + NumRef, const N: usize> {
+    buf: [T; N]
+}
+
+#[derive(Clone, Debug)]
+pub struct CuRegion<T: Ord + Clone + NumRef, const N: usize> {
+    pub start: CuPoint<T, N>,
+    pub end: CuPoint<T, N>
+}
+
+
 
 impl<T> MmHeap<T> {
     pub fn new() -> Self {
@@ -55,9 +63,8 @@ impl<T> MmHeap<T> {
 
     pub fn ify_by(&mut self, cmp: &impl Fn(&T, &T) -> Ordering) {
         let nonleaf_idx_upper_bound = (usize::MAX >> 1) >> self.buf.len().leading_zeros();
-        for i in (0..nonleaf_idx_upper_bound).rev() {
-            self.sift_down_by(i, cmp);
-        }
+        for i in (0..nonleaf_idx_upper_bound).rev()
+            { self.sift_down_by(i, cmp) }
     }
 
     pub fn peak_min(&self) -> Option<&T> {
@@ -72,64 +79,53 @@ impl<T> MmHeap<T> {
     }
 
     pub fn sift_up_by(&mut self, mut i: usize, cmp: &impl Fn(&T, &T) -> Ordering) {
-        if i == 0 || i >= self.buf.len() {
-            return;
-        }
-        let mut ord = if (i + 1).leading_zeros()&1 == 1 {
-            Ordering::Less
-        } else {
-            Ordering::Greater
-        };
+        if i == 0 || i >= self.buf.len()
+            { return }
+        // nodes with index i will be in layer n where 2^n is the maximal power of 2 <= i + 1,
+        // so we can check if n is odd/even by checking if the number of leading zeros in (i + 1)
+        // is odd/even.  In odd layers, nodes should be >= their descendents, and in even layers, <=.
+        let mut ord = match (i + 1).leading_zeros()&1
+            { 1 => Ordering::Less, _ => Ordering::Greater };
         let mut i1 = (i - 1) >> 1;
-        if cmp(self.buf.get(i1).unwrap(), self.buf.get(i).unwrap()) == ord {
+        if cmp(&self.buf[i1], &self.buf[i]) == ord {
             self.buf.swap(i, i1);
             i = i1;
             ord = ord.reverse()
         }
         while i > 2 {
             i1 = (i - 3) >> 2;
-            if cmp(self.buf.get(i).unwrap(), self.buf.get(i1).unwrap()) == ord {
+            if cmp(&self.buf[i], &self.buf[i1]) == ord {
                 self.buf.swap(i, i1);
-                i = i1;
-            } else {
-                break
-            }
+                i = i1
+            } else { break }
         }
     }
 
     pub fn sift_down_by(&mut self, mut i: usize, cmp: &impl Fn(&T, &T) -> Ordering) {
-        let ord = if (i + 1).leading_zeros()&1 == 1 {
-            Ordering::Less
-        } else {
-            Ordering::Greater
-        };
+        let ord = match (i + 1).leading_zeros()&1
+            { 1 => Ordering::Less, _ => Ordering::Greater };
         while 2*i + 1 < self.buf.len() {
             // Find m, the index of the extremal element among the children and grandchildren
             // of the element at index i. For min layers, extremal means
             // minimal, and for max layers it means maximal
             let mut m = 2*i + 1;
             for ii in [2*i + 2, 4*i + 3, 4*i + 4, 4*i + 5, 4*i + 6].into_iter().take_while(|&j|j<self.buf.len()) {
-                if cmp(self.buf.get(ii).unwrap(), self.buf.get(m).unwrap()) == ord {
-                    m = ii;
-                }
+                if cmp(&self.buf[ii], &self.buf[m]) == ord
+                    { m = ii }
             }
             // If m is a grandchild of i (as should be the case most of the time)
             // we may have to sift down farther after fixing up here
             if m > 2*i + 2 {
-                if cmp(self.buf.get(m).unwrap(), self.buf.get(i).unwrap()) == ord {
+                if cmp(&self.buf[m], &self.buf[i]) == ord {
                     self.buf.swap(m, i);
                     let p = (m - 1) >> 1;
-                    if cmp(self.buf.get(p).unwrap(), self.buf.get(m).unwrap()) == ord {
-                        self.buf.swap(m, p);
-                    }
+                    if cmp(&self.buf[p], &self.buf[m]) == ord
+                        { self.buf.swap(m, p) }
                     i = m;
-                }else{
-                    break
-                }
+                } else { break }
             } else {// otherwise em is a direct child so it must be a leaf or its invariant would be wrong
-                if cmp(self.buf.get(m).unwrap(), self.buf.get(i).unwrap()) == ord {
-                    self.buf.swap(m, i);
-                }
+                if cmp(&self.buf[m], &self.buf[i]) == ord
+                    { self.buf.swap(m, i) }
                 break
             }
         }
@@ -153,9 +149,8 @@ impl<T> MmHeap<T> {
 
     pub fn pop_idx_by(&mut self, i: usize, cmp: &impl Fn(&T, &T) -> Ordering) -> Option<T> {
         let l = self.buf.len();
-        if i + 1 >= l {
-            return self.buf.pop()
-        }
+        if i + 1 >= l
+            { return self.buf.pop() }
         self.buf.swap(i, l - 1);
         let res = self.buf.pop();
         self.sift_down_by(i, cmp);
@@ -163,20 +158,17 @@ impl<T> MmHeap<T> {
     }
 
     pub fn pushpop_min_by(&mut self, e: T, cmp: &impl Fn(&T, &T) -> Ordering) -> T {
-        if self.buf.is_empty() {
-            return e
+        if self.buf.is_empty() { e } else {
+            self.push_by(e, cmp);
+            self.pop_min_by(cmp).unwrap()
         }
-        self.push_by(e, cmp);
-        self.pop_min_by(cmp).unwrap()
     }
 
     pub fn pushpop_max_by(&mut self, e: T, cmp: &impl Fn(&T, &T) -> Ordering) -> T {
-        if self.buf.is_empty() {
-            return e
+        if self.buf.is_empty() { e } else {
+            self.push_by(e, cmp);
+            self.pop_max_by(cmp).unwrap()
         }
-        self.push_by(e, cmp);
-        self.pop_max_by(cmp).unwrap()
-        
     }
 }
 
@@ -194,20 +186,30 @@ impl<T> Into<Vec<T>> for MmHeap<T> {
     }
 }
 
+pub fn get_bounds<'a, R: KdRegion>(points: impl IntoIterator<Item = &'a R::Point>) -> Option<R> where R: 'a {
+    let mut it = points.into_iter();
+    let mut res = R::single_point(it.next()?);
+    it.for_each(|p|res.extend(p));
+    Some(res)
+}
+
 impl<R: KdRegion> KdTree<R> {
     pub fn make(points: Vec<R::Point>) -> Self {
         let mut res = Self{bounds: get_bounds(&points), points};
         res.ify();
         res
     }
+
     pub fn ify(&mut self) {
         self.ify_r(0, self.points.len(), 0)
     }
+
     pub fn walk<'a>(&'a self, visitor: &mut impl FnMut(&R, &'a R::Point) -> WalkDecision) {
         if let Some(bounds) = self.bounds.as_ref() {
             self.walk_r(visitor, bounds, 0, self.points.len(), 0);
         }
     }
+
     pub fn k_closest<'a>(&'a self, point: &R::Point, k: usize) -> Vec<&'a R::Point> {
         let mut res = MmHeap::new();
         let mut max_sqdist = None;
@@ -221,26 +223,28 @@ impl<R: KdRegion> KdTree<R> {
             if max_sqdist.as_ref().is_some_and(|d|d <= &bounds.min_sqdist(pt)) {
                 return WalkDecision::SkipChildren;
             }
-            return WalkDecision::Continue;
+            WalkDecision::Continue
         });
         res.into()
     }
+
     fn ify_r(&mut self, a: usize, mut b: usize, mut layer: usize) {
         while a < b {
             let med_idx = (a + b)/2;
-            self.points.get_mut(a..b).unwrap().select_nth_unstable_by(med_idx - a, |p, q| p.cmp(q, layer));
+            self.points[a..b].select_nth_unstable_by(med_idx - a, |p, q| p.cmp(q, layer));
             layer += 1;
             self.ify_r(med_idx + 1, b, layer);
             b = med_idx;
         }
     }
+
     fn walk_r<'a>(&'a self, visitor: &mut impl FnMut(&R, &'a R::Point) -> WalkDecision, bounds: &R, a: usize, mut b: usize, mut layer: usize) -> WalkDecision {
         let mut sub0_holder;
         let mut sub0 = bounds;
         while a < b {
             let mid_idx = (a + b)/2;
             // safe because a < b <= self.points.len() so mid_idx < self.points.len()
-            let point: &'a R::Point = self.points.get(mid_idx).unwrap();
+            let point: &'a R::Point = &self.points[mid_idx];
             match visitor(sub0, point) {
                 WalkDecision::Stop => return WalkDecision::Stop,
                 WalkDecision::SkipChildren => return WalkDecision::Continue,
@@ -263,11 +267,11 @@ impl<R: KdRegion> KdTree<R> {
     fn check_layer(&self, a: usize, b: usize, layer: usize) -> bool {
         if b > self.points.len() || a > b {
             return false
-        } else if a == b {
+        } if a == b {
             return true
         }
         let mid_idx = (a + b)/2;
-        let m = self.points.get(mid_idx).unwrap();
+        let m = &self.points[mid_idx];
         for e in self.points.get(a..mid_idx).unwrap_or(&[]) {
             if e.cmp(m, layer) == Ordering::Greater {
                 return false;
@@ -317,25 +321,22 @@ impl<R: KdRegion> KdTree<R> {
     }
 }
 
-#[derive(Clone, Debug)]
-pub struct CuPoint<T: Ord + Clone + NumRef, const N: usize> {
-    buf: [T; N]
-}
-
 impl<T: Ord + Clone + NumRef, const N: usize> KdPoint for CuPoint<T, N> {
     type Distance = T;
+
     fn cmp(&self, other: &Self, layer: usize) -> Ordering {
         let idx = layer%N;
         if N == 0 {
             Ordering::Equal
         } else {
-            self.buf.get(idx).unwrap().cmp(other.buf.get(idx).unwrap())
+            self.buf[idx].cmp(&other.buf[idx])
         }
     }
+
     fn sqdist(&self, other: &Self) -> Self::Distance {
         let mut a = T::zero();
         for i in 0..N {
-            let d = self.buf.get(i).unwrap().clone() - other.buf.get(i).unwrap();
+            let d = self.buf[i].clone() - &other.buf[i];
             a = a + d.clone()*&d;
         }
         a
@@ -351,29 +352,25 @@ impl<T: Ord + Clone + NumRef + SampleUniform, const N: usize> Distribution<CuPoi
 
 impl<T: Ord + Copy + NumRef, const N: usize> Copy for CuPoint<T, N> {}
 
-#[derive(Clone, Debug)]
-pub struct CuRegion<T: Ord + Clone + NumRef, const N: usize> {
-    pub start: CuPoint<T, N>,
-    pub end: CuPoint<T, N>
-}
-
 impl<T: Ord + Clone + NumRef, const N: usize> KdRegion for CuRegion<T, N> {
     type Point = CuPoint<T, N>;
+
     fn split(&self, point: &Self::Point, layer: usize) -> (Self, Self) {
         let mut sub0 = self.clone();
         let mut sub1 = self.clone();
         let idx = layer%N;
-        let split_coord = point.buf.get(idx).unwrap();
-        sub0.end.buf.get_mut(idx).unwrap().clone_from(split_coord);
-        sub1.start.buf.get_mut(idx).unwrap().clone_from(split_coord);
+        let split_coord = &point.buf[idx];
+        sub0.end.buf[idx].clone_from(split_coord);
+        sub1.start.buf[idx].clone_from(split_coord);
         (sub0, sub1)
     }
+
     fn min_sqdist(&self, point: &Self::Point) -> T {
         let mut a = T::zero();
         for i in 0..N {
-            let l = self.start.buf.get(i).unwrap();
-            let r = self.end.buf.get(i).unwrap();
-            let x = point.buf.get(i).unwrap();
+            let l = &self.start.buf[i];
+            let r = &self.end.buf[i];
+            let x = &point.buf[i];
             if x < l {
                 a = a + l - x;
             } else if r < x {
@@ -382,21 +379,25 @@ impl<T: Ord + Clone + NumRef, const N: usize> KdRegion for CuRegion<T, N> {
         }
         a
     }
+
     fn extend(&mut self, point: &Self::Point) {
         for (i, x) in (&point.buf).into_iter().enumerate() {
-            if x < self.start.buf.get(i).unwrap() {
-                self.start.buf.get_mut(i).unwrap().clone_from(x);
-            } else if x > self.end.buf.get(i).unwrap() {
-                self.end.buf.get_mut(i).unwrap().clone_from(x);
+            if x < &self.start.buf[i] {
+                self.start.buf[i].clone_from(x);
+            } else if x > &self.end.buf[i] {
+                self.end.buf[i].clone_from(x);
             }
         }
     }
+    
     fn single_point(point: &Self::Point) -> Self {
         Self{start: point.clone(), end: point.clone()}
     }
 }
 
 impl<T: Ord + Copy + NumRef, const N: usize> Copy for CuRegion<T, N> {}
+
+
 
 #[cfg(test)]
 mod tests {
@@ -414,12 +415,12 @@ mod tests {
     fn get_bounds<const N: usize>(kdt: &KdTree::<CuRegion<i64, N>>) -> Option<CuRegion<i64, N>> {
         let mut res = kdt.points.first().map(|pt|CuRegion{start:pt.clone(), end:pt.clone()})?;
         for i in 0..N {
-            for point in kdt.points.get(1..).unwrap() {
-                let x = point.buf.get(i).unwrap();
-                if x < res.start.buf.get(i).unwrap() {
-                    res.start.buf.get_mut(i).unwrap().clone_from(x)
-                } else if x > res.end.buf.get(i).unwrap() {
-                    res.end.buf.get_mut(i).unwrap().clone_from(x)
+            for point in &kdt.points[1..] {
+                let x = &point.buf[i];
+                if x < &res.start.buf[i] {
+                    res.start.buf[i].clone_from(x)
+                } else if x > &res.end.buf[i] {
+                    res.end.buf[i].clone_from(x)
                 }
             }
         }
@@ -437,7 +438,6 @@ mod tests {
             for _ in 0..NUM_POINTS {
                 points.push(box_dist.sample(&mut rng))
             }
-            eprintln!("Got {:?}", &points);
             eprintln!("Checking bounds of points");
             let kdt = KdTree::<CuRegion<i64, 3>>::make(points);
             let bounds = get_bounds(&kdt);
@@ -458,8 +458,6 @@ mod tests {
                 if res.len() != KCS_COUNT || res_naive.len() != KCS_COUNT {
                     panic!("K Closest and/or K Closest naive failed to get {} points!", KCS_COUNT)
                 }
-                eprintln!("K Closest got {:?}", res);
-                eprintln!("Naive got {:?}", res);
                 res.sort_unstable_by_key(|pt|point.sqdist(pt));
                 res_naive.sort_unstable_by_key(|pt|point.sqdist(pt));
                 if res.into_iter().zip(res_naive).any(|(o, e)|point.sqdist(o) != point.sqdist(e)) {
@@ -469,3 +467,4 @@ mod tests {
         }
     }
 }
+
