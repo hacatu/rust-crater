@@ -1,6 +1,6 @@
 name: cargo t
 permissions:
-  content: write
+  contents: write
 
 on:
   push:
