@@ -20,10 +20,10 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-        rustup update nightly
-        rustup default nightly
-        cargo install rustfilt grcov
-        rustup component add llvm-tools-preview
+        rustup update nightly -y
+        rustup default nightly -y
+        cargo install rustfilt grcov -y
+        rustup component add llvm-tools-preview -y
         ./cargo_t_cov.sh
         mkdir website
         cargo docs --no-deps
