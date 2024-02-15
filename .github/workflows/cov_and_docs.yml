@@ -1,4 +1,6 @@
 name: cargo t
+permissions:
+  content: write
 
 on:
   push:
