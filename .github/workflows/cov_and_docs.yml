@@ -26,7 +26,7 @@ jobs:
         rustup component add llvm-tools-preview
         ./cargo_t_cov.sh
         mkdir website
-        cargo docs --no-deps
+        cargo doc --no-deps
         mv target/debug/cov target/doc website/
     - name: Deploy Coverage and Docs to Pages
       uses: JamesIves/github-pages-deploy-action@v4
