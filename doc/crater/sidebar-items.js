@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["WalkDecision"],"fn":["get_bounds"],"mod":["cuboid","kdree","mmheap"],"trait":["KdPoint","KdRegion"]};
