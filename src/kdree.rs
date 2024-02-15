@@ -1,28 +1,45 @@
 use crate::{get_bounds, mmheap::MmHeap, KdPoint, KdRegion, WalkDecision};
 
-
+/// A KD tree represents a collection of points in space, with the ability to answer distance related queries, mainly:
+/// - What are the k closest points to a given point?  (The first k points in the tree, ordered by increasing squared
+///   distance from the given point, including the given point if it is in the tree).  (Sometimes called a nearest
+///   neighbors query)
+/// - What are all the points within a distance d of a given point?  (All points whose squared distance from a given
+///   point is at most d^2).  (Sometimes called a ball query)
+/// - What are all the points within a given region?  (Sometimes called a cuboid query)
+/// This implementation uses an implicit tree, meaning all points are stored in one contiguous buffer and no dereferences
+/// are needed to traverse the tree.  This is good for lookup performance, but unfortunately it means that adding/removing
+/// points can't be done currently without rebuilding the tree.
+/// Besides the three basic distance related queries, KD trees can be used to some extent to help with more complicated
+/// distance related queries, like finding the closest pairs of points.
 pub struct KdTree<R: KdRegion> {
     pub bounds: Option<R>,
     points: Vec<R::Point>
 }
 
 impl<R: KdRegion> KdTree<R> {
+	/// Construct a KD tree out of a vector of points, moving the vector into the output
+	/// Calculates the bounds and builds the implict tree
     pub fn make(points: Vec<R::Point>) -> Self {
         let mut res = Self{bounds: get_bounds(&points), points};
         res.ify();
         res
     }
 
-    pub fn ify(&mut self) {
-        self.ify_r(0, self.points.len(), 0)
-    }
-
+	/// Iterate over all points in the tree in depth first order,
+	/// calling a visitor function on each point.  The visitor function
+	/// is also given the bounds of the subtree corresponding to the point,
+	/// and may return a WalkDecision to instruct the traversal to skip the
+	/// subtree or to stop the traversal entirely.
     pub fn walk<'a>(&'a self, visitor: &mut impl FnMut(&R, &'a R::Point) -> WalkDecision) {
         if let Some(bounds) = self.bounds.as_ref() {
             self.walk_r(visitor, bounds, 0, self.points.len(), 0);
         }
     }
 
+	/// Return the k points in the tree which are the closest to a given point.
+	/// Ties are broken arbitrarily.  If there are fewer than k points in the tree,
+	/// returns all the points.
     pub fn k_closest<'a>(&'a self, point: &R::Point, k: usize) -> Vec<&'a R::Point> {
         let mut res = MmHeap::new();
         let mut max_sqdist = None;
@@ -39,6 +56,10 @@ impl<R: KdRegion> KdTree<R> {
             WalkDecision::Continue
         });
         res.into()
+    }
+
+    fn ify(&mut self) {
+        self.ify_r(0, self.points.len(), 0)
     }
 
     fn ify_r(&mut self, a: usize, mut b: usize, mut layer: usize) {

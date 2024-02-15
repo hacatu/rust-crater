@@ -1,5 +1,9 @@
 # Rust-Crater
 
+[![GitHub CI](https://github.com/hacatu/rust-crater/actions/workflows/cov_and_docs.yml/badge.svg)](https://github.com/hacatu/rust-crater/actions/workflows/cov_and_docs.yml)
+[![Documentation](https://img.shields.io/badge/-documentation-gray)](https://hacatu.github.io/rust-crater/doc)
+[![Coverage](https://hacatu.github.io/rust-crater/cov/badges/plastic.svg)](https://hacatu.github.io/rust-crater/cov)
+
 This is a data structures library, named after my [C data structures library](https://github.com/hacatu/Crater).
 
 Rust has a lot more builtin data structures compared to C, so much of the stuff is unnecessary.

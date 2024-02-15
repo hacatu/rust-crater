@@ -1,0 +1,35 @@
+name: cargo t
+
+on:
+  push:
+    branches: [ master ]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run Coverage and Doxygen
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+        rustup update nightly
+        rustup default nightly
+        cargo install rustfilt grcov
+        rustup component add llvm-tools-preview
+        ./cargo_t_cov.sh
+        mkdir website
+        cargo docs --no-deps
+        mv target/debug/cov target/doc website/
+    - name: Deploy Coverage and Docs to Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages
+        folder: website

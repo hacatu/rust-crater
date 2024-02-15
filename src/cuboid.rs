@@ -5,12 +5,16 @@ use rand::{distributions::{uniform::SampleUniform, Distribution, Uniform}, Rng};
 
 use crate::{KdPoint, KdRegion};
 
-
+/// Represents a point in N-dimensional Euclidean space whose coordinates are numeric type T
+/// Wrapping CuPoint<i64, 3> or CuPoint<f64, 3> is a good way to get started quickly if you
+/// don't need a topologically exotic implementation
 #[derive(Clone, Debug)]
 pub struct CuPoint<T: Ord + Clone + NumRef, const N: usize> {
     buf: [T; N]
 }
 
+/// Represents an axis aligned cuboid region in N-dimensional Euclidean space whose
+/// coordinates are numeric type T
 #[derive(Clone, Debug)]
 pub struct CuRegion<T: Ord + Clone + NumRef, const N: usize> {
     pub start: CuPoint<T, N>,
@@ -39,6 +43,10 @@ impl<T: Ord + Clone + NumRef, const N: usize> KdPoint for CuPoint<T, N> {
     }
 }
 
+/// Generate a random point in a square/cube/etc.
+/// Given a Uniform distribution sampling from a range, this adds the ability to
+/// randomly generate CuPoints whose coordinates are iid (independent and identically distributed)
+/// from that range
 impl<T: Ord + Clone + NumRef + SampleUniform, const N: usize> Distribution<CuPoint<T, N>> for Uniform<T> {
     fn sample<R>(&self, rng: &mut R) -> CuPoint<T, N> where R: Rng + ?Sized {
         CuPoint{buf: match self.sample_iter(rng).take(N).collect::<Vec<T>>().try_into() {
@@ -49,10 +57,12 @@ impl<T: Ord + Clone + NumRef + SampleUniform, const N: usize> Distribution<CuPoi
 impl<T: Ord + Copy + NumRef, const N: usize> Copy for CuPoint<T, N> {}
 
 impl<T: Ord + Clone + NumRef, const N: usize> CuPoint<T, N> {
+	/// get readonly access to the buffer
 	pub fn view(&self) -> &[T; N] {
 		&self.buf
 	}
 	
+	/// consume the point to mutably access the buffer
 	pub fn extract(self) -> [T; N] {
 		self.buf
 	}
