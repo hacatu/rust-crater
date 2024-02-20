@@ -13,7 +13,7 @@
 
 pub mod mmheap;
 pub mod cuboid;
-pub mod kdree;
+pub mod kdtree;
 
 use std::cmp::Ordering;
 

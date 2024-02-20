@@ -43,6 +43,12 @@ impl<T: Ord + Clone + NumRef, const N: usize> KdPoint for CuPoint<T, N> {
     }
 }
 
+impl<T: Ord + Clone + NumRef, const N: usize> From<[T; N]> for CuPoint<T, N> {
+    fn from(value: [T; N]) -> Self {
+        Self{buf: value}
+    }
+}
+
 /// Generate a random point in a square/cube/etc.
 /// Given a Uniform distribution sampling from a range, this adds the ability to
 /// randomly generate CuPoints whose coordinates are iid (independent and identically distributed)
@@ -117,7 +123,7 @@ impl<T: Ord + Copy + NumRef, const N: usize> Copy for CuRegion<T, N> {}
 mod tests {
     use rand::distributions::{Distribution, Uniform};
 
-    use crate::kdree::KdTree;
+    use crate::kdtree::KdTree;
 
     use super::*;
 

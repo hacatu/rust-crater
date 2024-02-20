@@ -1,3 +1,4 @@
 target/
 *.profdata
 *.profraw
+*.skip
