@@ -157,6 +157,12 @@ impl<T> MmHeap<T> {
             self.pop_max_by(cmp).unwrap()
         }
     }
+
+    pub fn extend_by<U: IntoIterator<Item=T>>(&mut self, iter: U, cmp: &impl Fn(&T, &T) -> Ordering) {
+        for x in iter {
+            self.push_by(x, cmp)
+        }
+    }
 }
 
 impl<'a, T> IntoIterator for &'a MmHeap<T> {

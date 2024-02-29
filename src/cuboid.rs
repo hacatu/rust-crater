@@ -1,4 +1,4 @@
-use std::cmp::Ordering;
+use std::{array, cmp::{max, Ordering}};
 
 use num_traits::NumRef;
 use rand::{distributions::{uniform::SampleUniform, Distribution, Uniform}, Rng};
@@ -8,22 +8,24 @@ use crate::{KdPoint, KdRegion};
 /// Represents a point in N-dimensional Euclidean space whose coordinates are numeric type T
 /// Wrapping CuPoint<i64, 3> or CuPoint<f64, 3> is a good way to get started quickly if you
 /// don't need a topologically exotic implementation
-#[derive(Clone, Debug)]
-pub struct CuPoint<T: Ord + Clone + NumRef, const N: usize> {
+#[derive(Clone, Debug, PartialEq)]
+pub struct CuPoint<T, const N: usize>
+where T: Ord + Clone + NumRef {
     buf: [T; N]
 }
 
 /// Represents an axis aligned cuboid region in N-dimensional Euclidean space whose
 /// coordinates are numeric type T
 #[derive(Clone, Debug)]
-pub struct CuRegion<T: Ord + Clone + NumRef, const N: usize> {
+pub struct CuRegion<T, const N: usize>
+where T: Ord + Clone + NumRef {
     pub start: CuPoint<T, N>,
     pub end: CuPoint<T, N>
 }
 
-impl<T: Ord + Clone + NumRef, const N: usize> KdPoint for CuPoint<T, N> {
+impl<T, const N: usize> KdPoint for CuPoint<T, N>
+where T: Ord + Clone + NumRef {
     type Distance = T;
-
     fn cmp(&self, other: &Self, layer: usize) -> Ordering {
         let idx = layer%N;
         if N == 0 {
@@ -43,26 +45,35 @@ impl<T: Ord + Clone + NumRef, const N: usize> KdPoint for CuPoint<T, N> {
     }
 }
 
-impl<T: Ord + Clone + NumRef, const N: usize> From<[T; N]> for CuPoint<T, N> {
-    fn from(value: [T; N]) -> Self {
-        Self{buf: value}
-    }
-}
-
 /// Generate a random point in a square/cube/etc.
 /// Given a Uniform distribution sampling from a range, this adds the ability to
 /// randomly generate CuPoints whose coordinates are iid (independent and identically distributed)
 /// from that range
-impl<T: Ord + Clone + NumRef + SampleUniform, const N: usize> Distribution<CuPoint<T, N>> for Uniform<T> {
+impl<T, const N: usize> Distribution<CuPoint<T, N>> for Uniform<T>
+where T: Ord + Clone + NumRef + SampleUniform {
     fn sample<R>(&self, rng: &mut R) -> CuPoint<T, N> where R: Rng + ?Sized {
-        CuPoint{buf: match self.sample_iter(rng).take(N).collect::<Vec<T>>().try_into() {
-            Ok(buf) => buf, Err(_) => panic!("Couldn't get N values from SampleUniform!")}}
+        CuPoint{buf: array::from_fn(|_|self.sample(rng))}
+    }
+}
+
+/// Generate a default point (all coordinates zero)
+impl<T, const N: usize> Default for CuPoint<T, N>
+where T: Ord + Clone + NumRef {
+    fn default() -> Self {
+        Self{buf: array::from_fn(|_|T::zero())}
     }
 }
 
 impl<T: Ord + Copy + NumRef, const N: usize> Copy for CuPoint<T, N> {}
+impl<T: Ord + Clone + NumRef, const N: usize> Eq for CuPoint<T, N> {}
 
-impl<T: Ord + Clone + NumRef, const N: usize> CuPoint<T, N> {
+impl<T, const N: usize> CuPoint<T, N>
+where T: Ord + Clone + NumRef {
+    /// make a point with a given value
+    pub fn make(buf: [T; N]) -> Self {
+        Self{buf}
+    }
+
 	/// get readonly access to the buffer
 	pub fn view(&self) -> &[T; N] {
 		&self.buf
@@ -74,7 +85,8 @@ impl<T: Ord + Clone + NumRef, const N: usize> CuPoint<T, N> {
 	}
 }
 
-impl<T: Ord + Clone + NumRef, const N: usize> KdRegion for CuRegion<T, N> {
+impl<T, const N: usize> KdRegion for CuRegion<T, N>
+where T: Ord + Clone + NumRef {
     type Point = CuPoint<T, N>;
 
     fn split(&self, point: &Self::Point, layer: usize) -> (Self, Self) {
@@ -88,18 +100,41 @@ impl<T: Ord + Clone + NumRef, const N: usize> KdRegion for CuRegion<T, N> {
     }
 
     fn min_sqdist(&self, point: &Self::Point) -> T {
-        let mut a = T::zero();
-        for i in 0..N {
-            let l = &self.start.buf[i];
-            let r = &self.end.buf[i];
-            let x = &point.buf[i];
-            if x < l {
-                a = a + l - x;
+        (&self.start.buf).into_iter().zip(&self.end.buf).zip(&point.buf).fold(T::zero(), |a,((l, r), x)|{
+            let d = if x < l {
+                l.clone() - x
             } else if r < x {
-                a = a + x - r;
-            }
-        }
-        a
+                x.clone() - r
+            } else {
+                return a
+            };
+            a + d.clone()*d
+        })
+    }
+
+    fn max_sqdist(&self, point: &Self::Point) -> Option<T> {
+        Some((&self.start.buf).into_iter().zip(&self.end.buf).zip(&point.buf).fold(T::zero(), |a,((l, r), x)|{
+            let d = if x < l {
+                r.clone() - x
+            } else if r < x {
+                x.clone() - l
+            } else {
+                max(r.clone() - x, x.clone() - l)
+            };
+            a + d.clone()*d
+        }))
+    }
+
+    fn might_overlap(&self, other: &Self) -> bool {
+        (&self.start.buf).into_iter().zip(&self.end.buf).zip((&other.start.buf).into_iter().zip(&other.end.buf)).all(|((a,b),(c,d))|{
+            !(b < c || d < a)
+        })
+    }
+
+    fn is_superset(&self, other: &Self) -> bool {
+        (&self.start.buf).into_iter().zip(&self.end.buf).zip((&other.start.buf).into_iter().zip(&other.end.buf)).all(|((a,b),(c,d))|{
+            a <= c && d <= b
+        })
     }
 
     fn extend(&mut self, point: &Self::Point) {
@@ -121,9 +156,7 @@ impl<T: Ord + Copy + NumRef, const N: usize> Copy for CuRegion<T, N> {}
 
 #[cfg(test)]
 mod tests {
-    use rand::distributions::{Distribution, Uniform};
-
-    use crate::kdtree::KdTree;
+    use crate::kdtree::{KdTree, QueryOptions};
 
     use super::*;
 
@@ -135,8 +168,8 @@ mod tests {
     const KD_TRIALS: usize = 5;
 
 	fn get_bounds<const N: usize>(kdt: &KdTree::<CuRegion<i64, N>>) -> Option<CuRegion<i64, N>> {
-		let mut it = kdt.into_iter();
-		let mut res = it.next().map(|pt|CuRegion{start:pt.clone(), end:pt.clone()})?;
+		let mut it = kdt.iter_points();
+		let mut res = it.next().map(|p|CuRegion{start:p.clone(), end:p.clone()})?;
 		for point in it {
 			for i in 0..N {
 				let x = &point.buf[i];
@@ -157,12 +190,12 @@ mod tests {
         let kcs_dist = Uniform::new_inclusive(-KCS_SIZE/2, KCS_SIZE/2);
         for _ in 0..KD_TRIALS {
             eprintln!("Generating {0} random lattice points in [-{1}, {1}]^3", NUM_POINTS, BOX_SIZE/2);
-            let mut points: Vec<CuPoint<i64, 3>> = Vec::new();
+            let mut points: Vec<(CuPoint<i64, 3>, ())> = Vec::new();
             for _ in 0..NUM_POINTS {
-                points.push(box_dist.sample(&mut rng))
+                points.push((box_dist.sample(&mut rng), ()))
             }
             eprintln!("Checking bounds of points");
-            let kdt = KdTree::<CuRegion<i64, 3>>::make(points);
+            let kdt: KdTree<_> = points.into_iter().collect();
             let bounds = get_bounds(&kdt);
             match (&bounds, &kdt.bounds) {
                 (Some(CuRegion{start: a, end: b}), Some(CuRegion{start: c, end: d})) =>
@@ -176,14 +209,14 @@ mod tests {
             for _ in 0..KCS_TRIALS {
                 let point: CuPoint<i64, 3> = kcs_dist.sample(&mut rng);
                 eprintln!("Getting {} closest points to {:?}", KCS_COUNT, &point);
-                let mut res = kdt.k_closest(&point, KCS_COUNT);
-                let mut res_naive = kdt.k_closest_naive(&point, KCS_COUNT);
+                let mut res: Vec<_> = kdt.k_closest(&point, KCS_COUNT, QueryOptions::ALL_NO_TIES).into();
+                let mut res_naive: Vec<_> = kdt.k_closest_naive(&point, KCS_COUNT).into();
                 if res.len() != KCS_COUNT || res_naive.len() != KCS_COUNT {
                     panic!("K Closest and/or K Closest naive failed to get {} points!", KCS_COUNT)
                 }
-                res.sort_unstable_by_key(|pt|point.sqdist(pt));
-                res_naive.sort_unstable_by_key(|pt|point.sqdist(pt));
-                if res.into_iter().zip(res_naive).any(|(o, e)|point.sqdist(o) != point.sqdist(e)) {
+                res.sort_unstable_by_key(|(p,_)|point.sqdist(p));
+                res_naive.sort_unstable_by_key(|(p,_)|point.sqdist(p));
+                if res.into_iter().zip(res_naive).any(|((o,_), (e,_))|point.sqdist(o) != point.sqdist(e)) {
                     panic!("K Closest and K Closest naive did not get the same sets of points!")
                 }
             }

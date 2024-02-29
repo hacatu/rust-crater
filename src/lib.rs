@@ -10,22 +10,30 @@
 //! To associate custom data to points, create structs wrapping CuPoint and CuRegion which delegate to their KdPoint
 //! and KdRegion implementations.  To implement KdPoint and KdRegion for arbitrary custom types,
 //! continue reading their trait documentation here.
+#![feature(split_at_checked, allocator_api, non_null_convenience, slice_ptr_get)]
 
 pub mod mmheap;
 pub mod cuboid;
 pub mod kdtree;
+pub mod fheap;
 
 use std::cmp::Ordering;
+
+use num_traits::Zero;
 
 
 /// A point in the tree.  Types implementing this can contain arbitrary data,
 /// to be accessed when the tree is queried by a point + distance, point + count,
-/// region, etc
-pub trait KdPoint: Sized {
-    type Distance: Ord;
+/// region, etc.
+/// NB: If `T: KdPoint`, `<T as Eq>::eq` can be implemented by comparing `T::sqdist` to `T::Distance::zero()` 
+pub trait KdPoint: Sized + Eq {
+    /// The type used by sqdist and related KdRegion functions to represent (squared) distance.
+    /// Must be totally ordered, where greater distances mean points are farther apart.
+    /// Also must be Clone and have a meaningful minimum value (0)
+    type Distance: Ord + Clone + Zero;
     /// The squared distance is more computationally convenient than the proper distance
     /// in many cases.  The distance function only has to be topologically consistent
-    /// and totally ordered.  See kdRegion::min_sqdist for more info
+    /// and totally ordered.  See KdRegion::min_sqdist for more info.  The return value should be >= Distance::zero().
     fn sqdist(&self, other: &Self) -> Self::Distance;
     /// Compare two points in some layer of the tree.  This generalizes splitting
     /// different layers of the tree in different dimensions and is tied to KdRegion::split.
@@ -47,7 +55,7 @@ pub trait KdPoint: Sized {
 /// Regions often represent infinitely many points in space (how many points are in your
 /// typical rectangle?).  Regions should be able to represent a single point, but the ability
 /// to represent an empty region isn't necessary.
-pub trait KdRegion: Sized {
+pub trait KdRegion: Sized + Clone {
     type Point: KdPoint;
     /// Given a point p in this region A and a layer l, split A into two subregions B and C so that:
     /// - Any point q in A is in B or C, that is, if A.min_sqdist(q) = 0, then either B.min_sqdist(q) = 0
@@ -75,10 +83,26 @@ pub trait KdRegion: Sized {
     fn single_point(point: &Self::Point) -> Self;
     /// Return the minimal squared distance any point in this region could have to a given point.
     /// The return value must be <= KdPoint::sqdist between the given point and any point within this region.
-    /// It's safe to return a smaller value, or even always return 0, but this degrades performance because
+    /// It's safe to return a smaller value, or even always return Distance::zero(), but this degrades performance because
     /// we can't prune subtrees from the search.
     /// If B is a subregion of A and p is a point not in A, then B.min_sqdist(p) >= A.min_sqdist(p)
     fn min_sqdist(&self, point: &Self::Point) -> <Self::Point as KdPoint>::Distance;
+    /// Return the maximal squared distance any point in this region could have to a given point, or None if infinite.
+    /// The return value must be >= KdPoint::sqdist between the given point and any point within this region.
+    /// None is considered infinitely far away.  It's safe to return a larger value, or even always return None,
+    /// but this may degrade performace for some queries that cull based on minimal distance.
+    /// Currently, this only happens for `KdTree::k_closest` where QueryOptions::lower_bound is `QueryBound::SqDist`.
+    /// If B is a subregion of A and p is a point not in A, then B.max_sqdist(p) <= A.max_sqdist(p).
+    fn max_sqdist(&self, point: &Self::Point) -> Option<<Self::Point as KdPoint>::Distance>;
+    /// Return true if this region and another region might overlap, or false if they are definitely disjoint.
+    /// Conservative implementors can always return true.
+    /// Currently only used by `KdTree::k_closest` if `QueryOptions::outer_bound` is `QueryBound::Region`.
+    fn might_overlap(&self, other: &Self) -> bool;
+    /// Return true if this region is DEFINITELY a superset of another region, or false if it is not.
+    /// A may be a superset of B even if B is internally tangent to A or B is A.
+    /// May return false even if self is a superset of other, if it would be expensive or difficult to compute correctly.
+    /// Currently only used by `KdTree::k_closest` if `QueryOptions::inner_bound` is `QueryBound::Region`
+    fn is_superset(&self, other: &Self) -> bool;
 }
 
 
