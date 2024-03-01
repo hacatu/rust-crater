@@ -11,6 +11,7 @@ pub struct RawNode<'a, T: Node<'a> + ?Sized> {
 }
 
 pub trait Node<'a> {
+	fn cmp(&'a self, other: &'a Self) -> Ordering;
 	fn get_raw(&'a self) -> &RawNode<'a, Self>;
 }
 
@@ -150,10 +151,10 @@ where T: Node<'a> + ?Sized {
 	}
 }
 
-unsafe fn merge_same_deg_by<'a, T>(node: &'a T, other: &'a T, cmp: &impl Fn(&T, &T) -> Ordering) -> &'a T
+unsafe fn merge_same_deg<'a, T>(node: &'a T, other: &'a T) -> &'a T
 where T: Node<'a> + ?Sized {
 	// first, find which of node / other has the minimal key, breaking ties with node
-	let (res_ptr, other_ptr) = if cmp(node, other).is_le() {
+	let (res_ptr, other_ptr) = if node.cmp(other).is_le() {
 		(node, other)
 	} else { (other, node) };
 	let res_links = res_ptr.get_raw();
@@ -189,7 +190,7 @@ where T: Node<'a> + ?Sized {
 	res_ptr
 }
 #[cfg(test)]
-fn check_by<'a, T>(node: &'a T, cmp: &impl Fn(&T, &T) -> Ordering) -> Result<usize, FibHeapError<'a, T>>
+fn check<'a, T>(node: &'a T) -> Result<usize, FibHeapError<'a, T>>
 where T: Node<'a> + ?Sized {
 	use FibHeapError::*;
 	let mut degree = 0;
@@ -201,7 +202,7 @@ where T: Node<'a> + ?Sized {
 		degree += 1;
 		(fib_d1, fib_d2) = (fib_d2, fib_d1 + fib_d2);
 		let child_links = child.get_raw();
-		if cmp(child, node) == Ordering::Less {
+		if child.cmp(node) == Ordering::Less {
 			return Err(LessThanParent(child))
 		}
 		if prev.is_none() {
@@ -212,7 +213,7 @@ where T: Node<'a> + ?Sized {
 			return Err(BrokenParentLink(child))
 		}
 		prev = Some(child);
-		count += check_by(child, cmp)?;
+		count += check(child)?;
 	}
 	if let Some(first_node) = first {
 		let child_links = first_node.get_raw();
@@ -241,13 +242,13 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 	pub fn peek_min(&self) -> Option<&'a T> {
 		self.min_root
 	}
-	pub fn pop_min_by(&mut self, cmp: &impl Fn(&T, &T) -> Ordering) -> Option<&'a T> {
+	pub fn pop_min(&mut self) -> Option<&'a T> {
 		if self.count <= 1 {
 			let res = self.min_root?;
 			self.count = 0;
 			self.min_root = None;
 			#[cfg(test)]{
-				assert!(self.check_by(cmp).is_ok())
+				assert!(self.check().is_ok())
 			}
 			return Some(res)
 		}
@@ -269,7 +270,7 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 						roots[degree] = Some(root_ptr);
 						break
 					},
-					Some(other_ptr) => root_ptr = unsafe { merge_same_deg_by(root_ptr, other_ptr, cmp) }
+					Some(other_ptr) => root_ptr = unsafe { merge_same_deg(root_ptr, other_ptr) }
 				}
 			}
 		}
@@ -282,7 +283,7 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 				*last_links.next.get() = Some(root_ptr);
 				*curr_links.prev.get() = Some(last_ptr);
 			}
-			if cmp(root_ptr, min_ptr).is_le() {
+			if root_ptr.cmp(min_ptr).is_le() {
 				min_ptr = root_ptr;
 			}
 			last_ptr = root_ptr;
@@ -300,28 +301,28 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 		self.count -= 1;
 		self.min_root = Some(min_ptr);
 		#[cfg(test)]{
-			assert_eq!(self.check_by(cmp), Ok(()));
+			assert_eq!(self.check(), Ok(()));
 		}
 		Some(min_root)
 	}
-	pub fn push_by(&mut self, ent: &'a T, cmp: &impl Fn(&T, &T) -> Ordering) {
-		unsafe { self.reattach_by(ent, cmp) }
+	pub fn push(&mut self, ent: &'a T) {
+		unsafe { self.reattach(ent) }
 		self.count += 1;
 		#[cfg(test)]{
-			assert_eq!(self.check_by(cmp), Ok(()))
+			assert_eq!(self.check(), Ok(()))
 		}
 	}
-	pub unsafe fn decrease_key_by(&mut self, ent: &'a T, cmp: &impl Fn(&T, &T) -> Ordering) {
-		if unsafe { *ent.get_raw().parent.get()}.is_some_and(|p|cmp(ent, p) == Ordering::Less) {
-			self.separate_node_by(ent, cmp)
+	pub unsafe fn decrease_key(&mut self, ent: &'a T) {
+		if unsafe { *ent.get_raw().parent.get()}.is_some_and(|p|ent.cmp(p) == Ordering::Less) {
+			self.separate_node(ent)
 		}
 	}
-	pub unsafe fn remove_by(&mut self, node: &'a T, cmp: &impl Fn(&T, &T) -> Ordering) {
-		self.separate_node_by(node, cmp);
+	pub unsafe fn remove(&mut self, node: &'a T) {
+		self.separate_node(node);
 		self.min_root = Some(node);
-		self.pop_min_by(cmp);
+		self.pop_min();
 	}
-	unsafe fn reattach_by(&mut self, node: &'a T, cmp: &impl Fn(&T, &T) -> Ordering) {
+	unsafe fn reattach(&mut self, node: &'a T) {
 		match self.count {
 			0 => {
 				self.min_root = Some(node);
@@ -336,7 +337,7 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 				let node_links = node.get_raw();
 				*node_links.next.get() = self.min_root;
 				*node_links.prev.get() = self.min_root;
-				if cmp(node, self.min_root.unwrap()).is_le() {
+				if node.cmp(self.min_root.unwrap()).is_le() {
 					self.min_root = Some(node)
 				}
 			},
@@ -349,13 +350,13 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 				*next_links.prev.get() = Some(node);
 				*node_links.next.get() = Some(next_root);
 				*root_links.next.get() = Some(node);
-				if cmp(node, self.min_root.unwrap()).is_le() {
+				if node.cmp(self.min_root.unwrap()).is_le() {
 					self.min_root = Some(node)
 				}
 			}
 		}
 	}
-	unsafe fn separate_node_by(&mut self, mut node: &'a T, cmp: &impl Fn(&T, &T) -> Ordering) {
+	unsafe fn separate_node(&mut self, mut node: &'a T) {
 		loop {
 			let Some(parent) = *node.get_raw().parent.get() else { return };
 			let next = remove_root(node);
@@ -364,7 +365,7 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 				*parent_links.first_child.get() = next;
 			}
 			*node.get_raw().parent.get() = None;
-			self.reattach_by(node, cmp);
+			self.reattach(node);
 			*parent_links.degree.get() -= 1;
 			if !*parent_links.has_split.get() {
 				if (*parent_links.parent.get()).is_none() {
@@ -376,11 +377,11 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 			node = parent;
 		}
 		#[cfg(test)]{
-			assert!(self.check_by(cmp).is_ok())
+			assert!(self.check().is_ok())
 		}
 	}
 	#[cfg(test)]
-	fn check_by(&self, cmp: &impl Fn(&T, &T) -> Ordering) -> Result<(), FibHeapError<'a, T>> {
+	fn check(&self) -> Result<(), FibHeapError<'a, T>> {
 		use FibHeapError::*;
 		if (self.count == 0) != self.min_root.is_none() {
 			return Err(WrongCount)
@@ -395,7 +396,7 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 		let mut prev: Option<&T> = None;
 		let mut count = 0;
 		for child in iter_siblings(root) {
-			if cmp(child, root) == Ordering::Less {
+			if child.cmp(root) == Ordering::Less {
 				return Err(LessThanParent(child))
 			}
 			let child_links = child.get_raw();
@@ -407,7 +408,7 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 				return Err(FibHeapError::BrokenParentLink(child))
 			}
 			prev = Some(child);
-			count += check_by(child, cmp)?;
+			count += check(child)?;
 		}
 		if let Some(child) = first {
 			let child_links = child.get_raw();
@@ -424,7 +425,7 @@ impl<'a, T: Node<'a> + ?Sized + 'a, U> FibHeap<'a, T, U> {
 
 #[cfg(test)]
 mod tests {
-    use std::{cell::UnsafeCell, ops::Deref};
+    use std::{cell::UnsafeCell, cmp::Ordering, ops::Deref};
 
     use super::{FibHeap, Node, RawNode};
 
@@ -435,6 +436,9 @@ mod tests {
 	}
 
 	impl<'a> Node<'a> for GenNode<'a> {
+		fn cmp(&'a self, other: &'a Self) -> Ordering {
+			unsafe { (*self.multiple.get()).cmp(other.multiple.get().as_ref().unwrap()) }
+		}
 		fn get_raw(&'a self) -> &RawNode<Self> {
 			&self._node
 		}
@@ -446,17 +450,16 @@ mod tests {
 		let scapegoat = Box::new(());
 		let mut ref_holder = Vec::new();
 		let mut my_heap = FibHeap::new(&scapegoat);
-		let cmp_fn = &|a: &GenNode, b: &GenNode|unsafe{(*a.multiple.get()).cmp(b.multiple.get().as_ref().unwrap())};
 		let ub = 100;
 		for n in 2..ub {
 			loop {
 				if !my_heap.peek_min().is_some_and(|g: &GenNode|unsafe { *g.multiple.get() } < n ) {
 					break
 				}
-				let node = my_heap.pop_min_by(cmp_fn).unwrap();
+				let node = my_heap.pop_min().unwrap();
 				unsafe { *node.multiple.get() += *node.prime.get() };
 				if unsafe { *node.multiple.get() } < ub {
-					my_heap.push_by(node, cmp_fn);
+					my_heap.push(node);
 				};
 			}
 			if !my_heap.peek_min().is_some_and(|g|unsafe { *g.multiple.get() } == n) {
@@ -465,7 +468,7 @@ mod tests {
 					let node = Box::new(GenNode{multiple: (n*n).into(), prime: n.into(), _node: Default::default()});
 					ref_holder.push(node);
 					let last_ref = unsafe { (ref_holder.last().unwrap().deref() as *const GenNode).as_ref() }.unwrap();
-					my_heap.push_by(last_ref, cmp_fn);
+					my_heap.push(last_ref);
 				}
 			}
 		}
