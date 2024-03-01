@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cuboid.rs`."><title>cuboid.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (3246e7951 2024-02-19)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c37d3936c59ababd.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/cuboid.rs`."><title>cuboid.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (c475e2303 2024-02-28)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-12cf3b4f4f9dc36d.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../crater/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -193,7 +193,40 @@
 <a href="#191" id="191">191</a>
 <a href="#192" id="192">192</a>
 <a href="#193" id="193">193</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::cmp::Ordering;
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::{array, cmp::{max, Ordering}};
 
 <span class="kw">use </span>num_traits::NumRef;
 <span class="kw">use </span>rand::{distributions::{uniform::SampleUniform, Distribution, Uniform}, Rng};
@@ -203,22 +236,24 @@
 <span class="doccomment">/// Represents a point in N-dimensional Euclidean space whose coordinates are numeric type T
 /// Wrapping CuPoint&lt;i64, 3&gt; or CuPoint&lt;f64, 3&gt; is a good way to get started quickly if you
 /// don't need a topologically exotic implementation
-</span><span class="attr">#[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span>CuPoint&lt;T: Ord + Clone + NumRef, <span class="kw">const </span>N: usize&gt; {
+</span><span class="attr">#[derive(Clone, Debug, PartialEq)]
+</span><span class="kw">pub struct </span>CuPoint&lt;T, <span class="kw">const </span>N: usize&gt;
+<span class="kw">where </span>T: Ord + Clone + NumRef {
     buf: [T; N]
 }
 
 <span class="doccomment">/// Represents an axis aligned cuboid region in N-dimensional Euclidean space whose
 /// coordinates are numeric type T
 </span><span class="attr">#[derive(Clone, Debug)]
-</span><span class="kw">pub struct </span>CuRegion&lt;T: Ord + Clone + NumRef, <span class="kw">const </span>N: usize&gt; {
+</span><span class="kw">pub struct </span>CuRegion&lt;T, <span class="kw">const </span>N: usize&gt;
+<span class="kw">where </span>T: Ord + Clone + NumRef {
     <span class="kw">pub </span>start: CuPoint&lt;T, N&gt;,
     <span class="kw">pub </span>end: CuPoint&lt;T, N&gt;
 }
 
-<span class="kw">impl</span>&lt;T: Ord + Clone + NumRef, <span class="kw">const </span>N: usize&gt; KdPoint <span class="kw">for </span>CuPoint&lt;T, N&gt; {
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; KdPoint <span class="kw">for </span>CuPoint&lt;T, N&gt;
+<span class="kw">where </span>T: Ord + Clone + NumRef {
     <span class="kw">type </span>Distance = T;
-
     <span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, layer: usize) -&gt; Ordering {
         <span class="kw">let </span>idx = layer%N;
         <span class="kw">if </span>N == <span class="number">0 </span>{
@@ -238,26 +273,35 @@
     }
 }
 
-<span class="kw">impl</span>&lt;T: Ord + Clone + NumRef, <span class="kw">const </span>N: usize&gt; From&lt;[T; N]&gt; <span class="kw">for </span>CuPoint&lt;T, N&gt; {
-    <span class="kw">fn </span>from(value: [T; N]) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>{buf: value}
-    }
-}
-
 <span class="doccomment">/// Generate a random point in a square/cube/etc.
 /// Given a Uniform distribution sampling from a range, this adds the ability to
 /// randomly generate CuPoints whose coordinates are iid (independent and identically distributed)
 /// from that range
-</span><span class="kw">impl</span>&lt;T: Ord + Clone + NumRef + SampleUniform, <span class="kw">const </span>N: usize&gt; Distribution&lt;CuPoint&lt;T, N&gt;&gt; <span class="kw">for </span>Uniform&lt;T&gt; {
+</span><span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; Distribution&lt;CuPoint&lt;T, N&gt;&gt; <span class="kw">for </span>Uniform&lt;T&gt;
+<span class="kw">where </span>T: Ord + Clone + NumRef + SampleUniform {
     <span class="kw">fn </span>sample&lt;R&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, rng: <span class="kw-2">&amp;mut </span>R) -&gt; CuPoint&lt;T, N&gt; <span class="kw">where </span>R: Rng + <span class="question-mark">?</span>Sized {
-        CuPoint{buf: <span class="kw">match </span><span class="self">self</span>.sample_iter(rng).take(N).collect::&lt;Vec&lt;T&gt;&gt;().try_into() {
-            <span class="prelude-val">Ok</span>(buf) =&gt; buf, <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="macro">panic!</span>(<span class="string">"Couldn't get N values from SampleUniform!"</span>)}}
+        CuPoint{buf: array::from_fn(|<span class="kw">_</span>|<span class="self">self</span>.sample(rng))}
+    }
+}
+
+<span class="doccomment">/// Generate a default point (all coordinates zero)
+</span><span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; Default <span class="kw">for </span>CuPoint&lt;T, N&gt;
+<span class="kw">where </span>T: Ord + Clone + NumRef {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>{buf: array::from_fn(|<span class="kw">_</span>|T::zero())}
     }
 }
 
 <span class="kw">impl</span>&lt;T: Ord + Copy + NumRef, <span class="kw">const </span>N: usize&gt; Copy <span class="kw">for </span>CuPoint&lt;T, N&gt; {}
+<span class="kw">impl</span>&lt;T: Ord + Clone + NumRef, <span class="kw">const </span>N: usize&gt; Eq <span class="kw">for </span>CuPoint&lt;T, N&gt; {}
 
-<span class="kw">impl</span>&lt;T: Ord + Clone + NumRef, <span class="kw">const </span>N: usize&gt; CuPoint&lt;T, N&gt; {
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; CuPoint&lt;T, N&gt;
+<span class="kw">where </span>T: Ord + Clone + NumRef {
+    <span class="doccomment">/// make a point with a given value
+    </span><span class="kw">pub fn </span>make(buf: [T; N]) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>{buf}
+    }
+
 	<span class="doccomment">/// get readonly access to the buffer
 	</span><span class="kw">pub fn </span>view(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[T; N] {
 		<span class="kw-2">&amp;</span><span class="self">self</span>.buf
@@ -269,7 +313,8 @@
 	}
 }
 
-<span class="kw">impl</span>&lt;T: Ord + Clone + NumRef, <span class="kw">const </span>N: usize&gt; KdRegion <span class="kw">for </span>CuRegion&lt;T, N&gt; {
+<span class="kw">impl</span>&lt;T, <span class="kw">const </span>N: usize&gt; KdRegion <span class="kw">for </span>CuRegion&lt;T, N&gt;
+<span class="kw">where </span>T: Ord + Clone + NumRef {
     <span class="kw">type </span>Point = CuPoint&lt;T, N&gt;;
 
     <span class="kw">fn </span>split(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point, layer: usize) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>) {
@@ -283,18 +328,41 @@
     }
 
     <span class="kw">fn </span>min_sqdist(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) -&gt; T {
-        <span class="kw">let </span><span class="kw-2">mut </span>a = T::zero();
-        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N {
-            <span class="kw">let </span>l = <span class="kw-2">&amp;</span><span class="self">self</span>.start.buf[i];
-            <span class="kw">let </span>r = <span class="kw-2">&amp;</span><span class="self">self</span>.end.buf[i];
-            <span class="kw">let </span>x = <span class="kw-2">&amp;</span>point.buf[i];
-            <span class="kw">if </span>x &lt; l {
-                a = a + l - x;
+        (<span class="kw-2">&amp;</span><span class="self">self</span>.start.buf).into_iter().zip(<span class="kw-2">&amp;</span><span class="self">self</span>.end.buf).zip(<span class="kw-2">&amp;</span>point.buf).fold(T::zero(), |a,((l, r), x)|{
+            <span class="kw">let </span>d = <span class="kw">if </span>x &lt; l {
+                l.clone() - x
             } <span class="kw">else if </span>r &lt; x {
-                a = a + x - r;
-            }
-        }
-        a
+                x.clone() - r
+            } <span class="kw">else </span>{
+                <span class="kw">return </span>a
+            };
+            a + d.clone()<span class="kw-2">*</span>d
+        })
+    }
+
+    <span class="kw">fn </span>max_sqdist(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+        <span class="prelude-val">Some</span>((<span class="kw-2">&amp;</span><span class="self">self</span>.start.buf).into_iter().zip(<span class="kw-2">&amp;</span><span class="self">self</span>.end.buf).zip(<span class="kw-2">&amp;</span>point.buf).fold(T::zero(), |a,((l, r), x)|{
+            <span class="kw">let </span>d = <span class="kw">if </span>x &lt; l {
+                r.clone() - x
+            } <span class="kw">else if </span>r &lt; x {
+                x.clone() - l
+            } <span class="kw">else </span>{
+                max(r.clone() - x, x.clone() - l)
+            };
+            a + d.clone()<span class="kw-2">*</span>d
+        }))
+    }
+
+    <span class="kw">fn </span>might_overlap(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        (<span class="kw-2">&amp;</span><span class="self">self</span>.start.buf).into_iter().zip(<span class="kw-2">&amp;</span><span class="self">self</span>.end.buf).zip((<span class="kw-2">&amp;</span>other.start.buf).into_iter().zip(<span class="kw-2">&amp;</span>other.end.buf)).all(|((a,b),(c,d))|{
+            !(b &lt; c || d &lt; a)
+        })
+    }
+
+    <span class="kw">fn </span>is_superset(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        (<span class="kw-2">&amp;</span><span class="self">self</span>.start.buf).into_iter().zip(<span class="kw-2">&amp;</span><span class="self">self</span>.end.buf).zip((<span class="kw-2">&amp;</span>other.start.buf).into_iter().zip(<span class="kw-2">&amp;</span>other.end.buf)).all(|((a,b),(c,d))|{
+            a &lt;= c &amp;&amp; d &lt;= b
+        })
     }
 
     <span class="kw">fn </span>extend(<span class="kw-2">&amp;mut </span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) {
@@ -316,9 +384,7 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>rand::distributions::{Distribution, Uniform};
-
-    <span class="kw">use </span><span class="kw">crate</span>::kdtree::KdTree;
+    <span class="kw">use </span><span class="kw">crate</span>::kdtree::{KdTree, QueryOptions};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
@@ -330,8 +396,8 @@
     <span class="kw">const </span>KD_TRIALS: usize = <span class="number">5</span>;
 
 	<span class="kw">fn </span>get_bounds&lt;<span class="kw">const </span>N: usize&gt;(kdt: <span class="kw-2">&amp;</span>KdTree::&lt;CuRegion&lt;i64, N&gt;&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;CuRegion&lt;i64, N&gt;&gt; {
-		<span class="kw">let </span><span class="kw-2">mut </span>it = kdt.into_iter();
-		<span class="kw">let </span><span class="kw-2">mut </span>res = it.next().map(|pt|CuRegion{start:pt.clone(), end:pt.clone()})<span class="question-mark">?</span>;
+		<span class="kw">let </span><span class="kw-2">mut </span>it = kdt.iter_points();
+		<span class="kw">let </span><span class="kw-2">mut </span>res = it.next().map(|p|CuRegion{start:p.clone(), end:p.clone()})<span class="question-mark">?</span>;
 		<span class="kw">for </span>point <span class="kw">in </span>it {
 			<span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..N {
 				<span class="kw">let </span>x = <span class="kw-2">&amp;</span>point.buf[i];
@@ -352,12 +418,12 @@
         <span class="kw">let </span>kcs_dist = Uniform::new_inclusive(-KCS_SIZE/<span class="number">2</span>, KCS_SIZE/<span class="number">2</span>);
         <span class="kw">for _ in </span><span class="number">0</span>..KD_TRIALS {
             <span class="macro">eprintln!</span>(<span class="string">"Generating {0} random lattice points in [-{1}, {1}]^3"</span>, NUM_POINTS, BOX_SIZE/<span class="number">2</span>);
-            <span class="kw">let </span><span class="kw-2">mut </span>points: Vec&lt;CuPoint&lt;i64, <span class="number">3</span>&gt;&gt; = Vec::new();
+            <span class="kw">let </span><span class="kw-2">mut </span>points: Vec&lt;(CuPoint&lt;i64, <span class="number">3</span>&gt;, ())&gt; = Vec::new();
             <span class="kw">for _ in </span><span class="number">0</span>..NUM_POINTS {
-                points.push(box_dist.sample(<span class="kw-2">&amp;mut </span>rng))
+                points.push((box_dist.sample(<span class="kw-2">&amp;mut </span>rng), ()))
             }
             <span class="macro">eprintln!</span>(<span class="string">"Checking bounds of points"</span>);
-            <span class="kw">let </span>kdt = KdTree::&lt;CuRegion&lt;i64, <span class="number">3</span>&gt;&gt;::make(points);
+            <span class="kw">let </span>kdt: KdTree&lt;<span class="kw">_</span>&gt; = points.into_iter().collect();
             <span class="kw">let </span>bounds = get_bounds(<span class="kw-2">&amp;</span>kdt);
             <span class="kw">match </span>(<span class="kw-2">&amp;</span>bounds, <span class="kw-2">&amp;</span>kdt.bounds) {
                 (<span class="prelude-val">Some</span>(CuRegion{start: a, end: b}), <span class="prelude-val">Some</span>(CuRegion{start: c, end: d})) =&gt;
@@ -371,14 +437,14 @@
             <span class="kw">for _ in </span><span class="number">0</span>..KCS_TRIALS {
                 <span class="kw">let </span>point: CuPoint&lt;i64, <span class="number">3</span>&gt; = kcs_dist.sample(<span class="kw-2">&amp;mut </span>rng);
                 <span class="macro">eprintln!</span>(<span class="string">"Getting {} closest points to {:?}"</span>, KCS_COUNT, <span class="kw-2">&amp;</span>point);
-                <span class="kw">let </span><span class="kw-2">mut </span>res = kdt.k_closest(<span class="kw-2">&amp;</span>point, KCS_COUNT);
-                <span class="kw">let </span><span class="kw-2">mut </span>res_naive = kdt.k_closest_naive(<span class="kw-2">&amp;</span>point, KCS_COUNT);
+                <span class="kw">let </span><span class="kw-2">mut </span>res: Vec&lt;<span class="kw">_</span>&gt; = kdt.k_closest(<span class="kw-2">&amp;</span>point, KCS_COUNT, QueryOptions::ALL_NO_TIES).into();
+                <span class="kw">let </span><span class="kw-2">mut </span>res_naive: Vec&lt;<span class="kw">_</span>&gt; = kdt.k_closest_naive(<span class="kw-2">&amp;</span>point, KCS_COUNT).into();
                 <span class="kw">if </span>res.len() != KCS_COUNT || res_naive.len() != KCS_COUNT {
                     <span class="macro">panic!</span>(<span class="string">"K Closest and/or K Closest naive failed to get {} points!"</span>, KCS_COUNT)
                 }
-                res.sort_unstable_by_key(|pt|point.sqdist(pt));
-                res_naive.sort_unstable_by_key(|pt|point.sqdist(pt));
-                <span class="kw">if </span>res.into_iter().zip(res_naive).any(|(o, e)|point.sqdist(o) != point.sqdist(e)) {
+                res.sort_unstable_by_key(|(p,<span class="kw">_</span>)|point.sqdist(p));
+                res_naive.sort_unstable_by_key(|(p,<span class="kw">_</span>)|point.sqdist(p));
+                <span class="kw">if </span>res.into_iter().zip(res_naive).any(|((o,<span class="kw">_</span>), (e,<span class="kw">_</span>))|point.sqdist(o) != point.sqdist(e)) {
                     <span class="macro">panic!</span>(<span class="string">"K Closest and K Closest naive did not get the same sets of points!"</span>)
                 }
             }

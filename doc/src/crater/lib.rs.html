@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (3246e7951 2024-02-19)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c37d3936c59ababd.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (c475e2303 2024-02-28)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-12cf3b4f4f9dc36d.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../crater/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -101,6 +101,30 @@
 <a href="#99" id="99">99</a>
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Very Generic Data Structures
 //!
 //! Rust-Crater provides KD Trees and minmax heaps with as much flexibility as possible.
@@ -113,22 +137,30 @@
 //! To associate custom data to points, create structs wrapping CuPoint and CuRegion which delegate to their KdPoint
 //! and KdRegion implementations.  To implement KdPoint and KdRegion for arbitrary custom types,
 //! continue reading their trait documentation here.
+</span><span class="attr">#![feature(split_at_checked, allocator_api, non_null_convenience, slice_ptr_get)]
 
 </span><span class="kw">pub mod </span>mmheap;
 <span class="kw">pub mod </span>cuboid;
 <span class="kw">pub mod </span>kdtree;
+<span class="kw">pub mod </span>fheap;
 
 <span class="kw">use </span>std::cmp::Ordering;
+
+<span class="kw">use </span>num_traits::Zero;
 
 
 <span class="doccomment">/// A point in the tree.  Types implementing this can contain arbitrary data,
 /// to be accessed when the tree is queried by a point + distance, point + count,
-/// region, etc
-</span><span class="kw">pub trait </span>KdPoint: Sized {
-    <span class="kw">type </span>Distance: Ord;
+/// region, etc.
+/// NB: If `T: KdPoint`, `&lt;T as Eq&gt;::eq` can be implemented by comparing `T::sqdist` to `T::Distance::zero()` 
+</span><span class="kw">pub trait </span>KdPoint: Sized + Eq {
+    <span class="doccomment">/// The type used by sqdist and related KdRegion functions to represent (squared) distance.
+    /// Must be totally ordered, where greater distances mean points are farther apart.
+    /// Also must be Clone and have a meaningful minimum value (0)
+    </span><span class="kw">type </span>Distance: Ord + Clone + Zero;
     <span class="doccomment">/// The squared distance is more computationally convenient than the proper distance
     /// in many cases.  The distance function only has to be topologically consistent
-    /// and totally ordered.  See kdRegion::min_sqdist for more info
+    /// and totally ordered.  See KdRegion::min_sqdist for more info.  The return value should be &gt;= Distance::zero().
     </span><span class="kw">fn </span>sqdist(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="self">Self</span>::Distance;
     <span class="doccomment">/// Compare two points in some layer of the tree.  This generalizes splitting
     /// different layers of the tree in different dimensions and is tied to KdRegion::split.
@@ -150,7 +182,7 @@
 /// Regions often represent infinitely many points in space (how many points are in your
 /// typical rectangle?).  Regions should be able to represent a single point, but the ability
 /// to represent an empty region isn't necessary.
-</span><span class="kw">pub trait </span>KdRegion: Sized {
+</span><span class="kw">pub trait </span>KdRegion: Sized + Clone {
     <span class="kw">type </span>Point: KdPoint;
     <span class="doccomment">/// Given a point p in this region A and a layer l, split A into two subregions B and C so that:
     /// - Any point q in A is in B or C, that is, if A.min_sqdist(q) = 0, then either B.min_sqdist(q) = 0
@@ -178,10 +210,26 @@
     </span><span class="kw">fn </span>single_point(point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) -&gt; <span class="self">Self</span>;
     <span class="doccomment">/// Return the minimal squared distance any point in this region could have to a given point.
     /// The return value must be &lt;= KdPoint::sqdist between the given point and any point within this region.
-    /// It's safe to return a smaller value, or even always return 0, but this degrades performance because
+    /// It's safe to return a smaller value, or even always return Distance::zero(), but this degrades performance because
     /// we can't prune subtrees from the search.
     /// If B is a subregion of A and p is a point not in A, then B.min_sqdist(p) &gt;= A.min_sqdist(p)
     </span><span class="kw">fn </span>min_sqdist(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) -&gt; &lt;<span class="self">Self</span>::Point <span class="kw">as </span>KdPoint&gt;::Distance;
+    <span class="doccomment">/// Return the maximal squared distance any point in this region could have to a given point, or None if infinite.
+    /// The return value must be &gt;= KdPoint::sqdist between the given point and any point within this region.
+    /// None is considered infinitely far away.  It's safe to return a larger value, or even always return None,
+    /// but this may degrade performace for some queries that cull based on minimal distance.
+    /// Currently, this only happens for `KdTree::k_closest` where QueryOptions::lower_bound is `QueryBound::SqDist`.
+    /// If B is a subregion of A and p is a point not in A, then B.max_sqdist(p) &lt;= A.max_sqdist(p).
+    </span><span class="kw">fn </span>max_sqdist(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span>::Point <span class="kw">as </span>KdPoint&gt;::Distance&gt;;
+    <span class="doccomment">/// Return true if this region and another region might overlap, or false if they are definitely disjoint.
+    /// Conservative implementors can always return true.
+    /// Currently only used by `KdTree::k_closest` if `QueryOptions::outer_bound` is `QueryBound::Region`.
+    </span><span class="kw">fn </span>might_overlap(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool;
+    <span class="doccomment">/// Return true if this region is DEFINITELY a superset of another region, or false if it is not.
+    /// A may be a superset of B even if B is internally tangent to A or B is A.
+    /// May return false even if self is a superset of other, if it would be expensive or difficult to compute correctly.
+    /// Currently only used by `KdTree::k_closest` if `QueryOptions::inner_bound` is `QueryBound::Region`
+    </span><span class="kw">fn </span>is_superset(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool;
 }
 
 

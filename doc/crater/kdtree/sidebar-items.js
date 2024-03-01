@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["KdTree"]};
+window.SIDEBAR_ITEMS = {"enum":["QueryBound"],"struct":["Iter","IterMut","KdTree","QueryOptions"]};
