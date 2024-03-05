@@ -38,7 +38,10 @@ where T: Ord + Clone + NumRef {
     fn sqdist(&self, other: &Self) -> Self::Distance {
         let mut a = T::zero();
         for i in 0..N {
-            let d = self.buf[i].clone() - &other.buf[i];
+            let (x, y) = (&self.buf[i], &other.buf[i]);
+            // compute absolute difference between x and y in a really annoying way because generic
+            // math is annoying and we can't just call x.abs_diff(y)
+            let d = if x > y { x.clone() - y } else { y.clone() - x };
             a = a + d.clone()*&d;
         }
         a
@@ -83,6 +86,13 @@ where T: Ord + Clone + NumRef {
 	pub fn extract(self) -> [T; N] {
 		self.buf
 	}
+}
+
+impl<T, const N: usize> From<[T; N]> for CuPoint<T, N>
+where T: Ord + Clone + NumRef {
+    fn from(buf: [T; N]) -> Self {
+        Self{buf}
+    }
 }
 
 impl<T, const N: usize> KdRegion for CuRegion<T, N>

@@ -194,14 +194,17 @@ impl<R: KdRegion, V> KdTree<R, V> {
                     match point.sqdist(pt).cmp(max_sqdist.as_ref().unwrap()) {
                         Ordering::Greater => (),
                         Ordering::Equal => tied_points.push((pt, v)),
-                        Ordering::Less => if res.len() + 1 == k {
-                            tied_points.clear();
-                            tied_points.push(res.pushpop_max_by((pt, v), cmp_fn));
-                            max_sqdist = Some(point.sqdist(tied_points[0].0));
-                            while res.peek_max_by(cmp_fn).is_some_and(
-                                |&(p, _)|point.sqdist(p) == *max_sqdist.as_ref().unwrap()
-                            ) {
-                                tied_points.push(res.pop_max_by(cmp_fn).unwrap())
+                        Ordering::Less => {
+                            res.push_by((pt, v), cmp_fn);
+                            if res.len() >= k {
+                                tied_points.clear();
+                                tied_points.push(res.pop_max_by(cmp_fn).unwrap());
+                                max_sqdist = Some(point.sqdist(tied_points[0].0));
+                                while res.peek_max_by(cmp_fn).is_some_and(
+                                    |&(p, _)|point.sqdist(p) == *max_sqdist.as_ref().unwrap()
+                                ) {
+                                    tied_points.push(res.pop_max_by(cmp_fn).unwrap())
+                                }
                             }
                         }
                     }
@@ -286,12 +289,22 @@ impl<R: KdRegion, V> KdTree<R, V> {
         ).offset_from(self.points.as_ptr()) as usize
     }
 
+    /// Convert an internal index into a reference to a point in the tree.
+    /// The internal index must have come from `launder_point_ref` or `launder_value_ref`
+    /// called on the same tree.
+    /// The intent of this function is to allow finding the points corresponding to values
+    /// given a value reference, like for example if some of the values are made into
+    /// an intrusive linked data structure.
+    pub unsafe fn launder_idx_point(&self, idx: usize) -> &R::Point {
+        &self.points[idx].0
+    }
+
     /// Convert an internal index into a mutable reference to a value in the tree.
     /// The internal index must have come from `launder_point_ref` or `launder_value_ref`
     /// called on the same tree.
     /// The intent of this function is to allow mutating the values of the points in the
     /// result set of `k_closest` etc.
-    pub unsafe fn launder_idx(&mut self, idx: usize) -> &mut V {
+    pub unsafe fn launder_idx_mut(&mut self, idx: usize) -> &mut V {
         &mut self.points[idx].1
     }
 
@@ -308,7 +321,7 @@ impl<R: KdRegion, V> KdTree<R, V> {
                 Ordering::Greater => a = mid_idx + 1,
                 Ordering::Equal => {
                     if point == p { return mid_idx }
-                    a = self.find_r(point, a, mid_idx, layer + a);
+                    a = self.find_r(point, a, mid_idx, layer + 1);
                     if a != self.len() { return a }
                     a = mid_idx + 1
                 }
