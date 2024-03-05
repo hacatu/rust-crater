@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/kdtree.rs`."><title>kdtree.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (c475e2303 2024-02-28)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-12cf3b4f4f9dc36d.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/kdtree.rs`."><title>kdtree.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (d18480b84 2024-03-04)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-12cf3b4f4f9dc36d.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../crater/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -475,6 +475,19 @@
 <a href="#473" id="473">473</a>
 <a href="#474" id="474">474</a>
 <a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::{cmp::Ordering, mem, ops::{Index, IndexMut}};
 
 <span class="kw">use </span>num_traits::Zero;
@@ -671,14 +684,17 @@
                     <span class="kw">match </span>point.sqdist(pt).cmp(max_sqdist.as_ref().unwrap()) {
                         Ordering::Greater =&gt; (),
                         Ordering::Equal =&gt; tied_points.push((pt, v)),
-                        Ordering::Less =&gt; <span class="kw">if </span>res.len() + <span class="number">1 </span>== k {
-                            tied_points.clear();
-                            tied_points.push(res.pushpop_max_by((pt, v), cmp_fn));
-                            max_sqdist = <span class="prelude-val">Some</span>(point.sqdist(tied_points[<span class="number">0</span>].<span class="number">0</span>));
-                            <span class="kw">while </span>res.peek_max_by(cmp_fn).is_some_and(
-                                |<span class="kw-2">&amp;</span>(p, <span class="kw">_</span>)|point.sqdist(p) == <span class="kw-2">*</span>max_sqdist.as_ref().unwrap()
-                            ) {
-                                tied_points.push(res.pop_max_by(cmp_fn).unwrap())
+                        Ordering::Less =&gt; {
+                            res.push_by((pt, v), cmp_fn);
+                            <span class="kw">if </span>res.len() &gt;= k {
+                                tied_points.clear();
+                                tied_points.push(res.pop_max_by(cmp_fn).unwrap());
+                                max_sqdist = <span class="prelude-val">Some</span>(point.sqdist(tied_points[<span class="number">0</span>].<span class="number">0</span>));
+                                <span class="kw">while </span>res.peek_max_by(cmp_fn).is_some_and(
+                                    |<span class="kw-2">&amp;</span>(p, <span class="kw">_</span>)|point.sqdist(p) == <span class="kw-2">*</span>max_sqdist.as_ref().unwrap()
+                                ) {
+                                    tied_points.push(res.pop_max_by(cmp_fn).unwrap())
+                                }
                             }
                         }
                     }
@@ -763,12 +779,22 @@
         ).offset_from(<span class="self">self</span>.points.as_ptr()) <span class="kw">as </span>usize
     }
 
+    <span class="doccomment">/// Convert an internal index into a reference to a point in the tree.
+    /// The internal index must have come from `launder_point_ref` or `launder_value_ref`
+    /// called on the same tree.
+    /// The intent of this function is to allow finding the points corresponding to values
+    /// given a value reference, like for example if some of the values are made into
+    /// an intrusive linked data structure.
+    </span><span class="kw">pub unsafe fn </span>launder_idx_point(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: usize) -&gt; <span class="kw-2">&amp;</span>R::Point {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.points[idx].<span class="number">0
+    </span>}
+
     <span class="doccomment">/// Convert an internal index into a mutable reference to a value in the tree.
     /// The internal index must have come from `launder_point_ref` or `launder_value_ref`
     /// called on the same tree.
     /// The intent of this function is to allow mutating the values of the points in the
     /// result set of `k_closest` etc.
-    </span><span class="kw">pub unsafe fn </span>launder_idx(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: usize) -&gt; <span class="kw-2">&amp;mut </span>V {
+    </span><span class="kw">pub unsafe fn </span>launder_idx_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idx: usize) -&gt; <span class="kw-2">&amp;mut </span>V {
         <span class="kw-2">&amp;mut </span><span class="self">self</span>.points[idx].<span class="number">1
     </span>}
 
@@ -785,7 +811,7 @@
                 Ordering::Greater =&gt; a = mid_idx + <span class="number">1</span>,
                 Ordering::Equal =&gt; {
                     <span class="kw">if </span>point == p { <span class="kw">return </span>mid_idx }
-                    a = <span class="self">self</span>.find_r(point, a, mid_idx, layer + a);
+                    a = <span class="self">self</span>.find_r(point, a, mid_idx, layer + <span class="number">1</span>);
                     <span class="kw">if </span>a != <span class="self">self</span>.len() { <span class="kw">return </span>a }
                     a = mid_idx + <span class="number">1
                 </span>}
