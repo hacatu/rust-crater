@@ -2,6 +2,12 @@
 name = "crater"
 version = "0.1.0"
 edition = "2021"
+authors = ["hacatu <hacatu5000@gmail.com>"]
+description = "Very generic containers including KD trees, fibonacci heaps, minmax heaps, ..."
+repository = "https://github.com/hacatu/rust-crater"
+license = "MPL-2.0"
+keywords = ["kdtree", "priority-queue", "fibonacci-heap", "minmax-heap"]
+categories = ["algorithms", "data-structures"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
