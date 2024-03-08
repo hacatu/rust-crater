@@ -1,2 +1,101 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="API documentation for the Rust `fheap` mod in crate `crater`."><title>crater::fheap - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (d18480b84 2024-03-04)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-12cf3b4f4f9dc36d.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../crater/index.html">crater</a><span class="version">0.1.0</span></h2></div><h2 class="location"><a href="#">Module fheap</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></section><h2><a href="../index.html">In crate crater</a></h2></div></nav><div class="sidebar-resizer"></div>
-    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../crater/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">crater</a>::<wbr><a class="mod" href="#">fheap</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/crater/fheap.rs.html#1-478">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.FibHeap.html" title="struct crater::fheap::FibHeap">FibHeap</a></div></li><li><div class="item-name"><a class="struct" href="struct.RawNode.html" title="struct crater::fheap::RawNode">RawNode</a></div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.Node.html" title="trait crater::fheap::Node">Node</a></div></li></ul></section></div></main></body></html>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="A fibonacci heap is a type of data structure optimized for use as a priority queue. It is commonly useful in pathfinding algorithms like Dijkstra’s and A*."><title>crater::fheap - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (9c3ad802d 2024-03-07)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../sidebar-items.js"></script><script defer src="../../static.files/main-12cf3b4f4f9dc36d.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../crater/index.html">crater</a><span class="version">0.1.0</span></h2></div><h2 class="location"><a href="#">Module fheap</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></section><h2><a href="../index.html">In crate crater</a></h2></div></nav><div class="sidebar-resizer"></div>
+    <main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../crater/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../index.html">crater</a>::<wbr><a class="mod" href="#">fheap</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../src/crater/fheap.rs.html#1-730">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>A fibonacci heap is a type of data structure optimized for use as a priority queue.
+It is commonly useful in pathfinding algorithms like Dijkstra’s and A*.</p>
+<p>Below is a very in depth comparison and analysis of various types of heaps,
+skip to <a href="struct.FibHeap.html" title="struct crater::fheap::FibHeap"><code>FibHeap</code></a> if you only want to know how to use this library.
+Reading the tests is also a great way to find examples.  Building code as tests will
+help debug fibheap code in particular because additional checks are performed under <code>cfg(test)</code>
+that will <code>abort</code> if the heap breaks (ie because a duplicate node was added, a node was removed
+that wasn’t in the heap, or there is a bug in the library).</p>
+<p>Depending on your needs, <a href="../mmheap/struct.MmHeap.html" title="struct crater::mmheap::MmHeap"><code>crate::mmheap::MmHeap</code></a> may be more useful to you, or
+Rust’s builtin <a href="https://doc.rust-lang.org/nightly/alloc/collections/binary_heap/struct.BinaryHeap.html" title="struct alloc::collections::binary_heap::BinaryHeap"><code>std::collections::BinaryHeap</code></a>.  Both of these are binary heaps,
+but the former offers fast access to both the minimum and the maximum.</p>
+<h2 id="comparison-of-heaps"><a class="doc-anchor" href="#comparison-of-heaps">§</a>Comparison of Heaps</h2><h3 id="asymptotic-time"><a class="doc-anchor" href="#asymptotic-time">§</a>Asymptotic Time</h3><div><table><thead><tr><th></th><th>Binary</th><th>Pairing</th><th>Fibonacci</th><th>Bucket</th></tr></thead><tbody>
+<tr><td>find-min</td><td>O(1)</td><td>O(1)</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>extract-min</td><td>O(logn)</td><td>O(logn)</td><td>O(logn)</td><td>O(1)</td></tr>
+<tr><td>insert</td><td>O(logn)</td><td>O(1)</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>decrease-key</td><td>O(logn)</td><td>O(logn)</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>increase-key</td><td>O(logn)</td><td>O(logn)</td><td>O(logn)</td><td>O(1)</td></tr>
+<tr><td>meld</td><td>O(n)</td><td>O(1)</td><td>O(1)</td><td>O(n)</td></tr>
+<tr><td>Not all of these operations are directly supported.  In Fibonacci heaps, <code>increase-key</code></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>must be implemented by removing and re-inserting an element.  In binary heaps,</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>decrease/increase key can be difficult to implement because the elements exist in the heap’s</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>internal buffer and there isn’t a direct way to get a reference/index to them.</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Also in binary heaps, meld is not directly supported and must be implemented by extending</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>the internal buffer of one heap by that of another and re-heapifying.</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Bucket queues are extremely good when relevant, but they only support a fixed number of</td><td></td><td></td><td></td><td></td></tr>
+<tr><td>priorities, literally having a bucket for each priority, so they are not always suitable.</td><td></td><td></td><td></td><td></td></tr>
+</tbody></table>
+</div><h3 id="linked-vs-unlinked-data-structures"><a class="doc-anchor" href="#linked-vs-unlinked-data-structures">§</a>Linked vs Unlinked Data Structures</h3>
+<p>Asymptotic time complexity is not the whole story.  Fibonacci heaps and pairing heaps are linked data
+structures, so links to adjacent nodes are stored as pointers, whereas binary heaps
+have such a simple, rigid structure that they can be stored directly in an array
+(eg the children of a node at index i will be at indices 2i + 1 and 2i + 2).
+Linked data structures can still be stored in an array, but the offsets between nodes
+are not consistent and so generally pointers are used, which can introduce overhead in several
+ways.  Linked data structures often underperform relative to “rigid” data structures
+even though their asymptotic complexity is better.  And even among linked data structures,
+Fibonacci heaps are considered complex and may perform worse than pairing heaps.</p>
+<h3 id="amortized-running-time"><a class="doc-anchor" href="#amortized-running-time">§</a>Amortized Running Time</h3>
+<p>The runtimes of Fibonacci heaps are amortized using potential, which means if the
+number of other calls is much much greater than the number of extract-min calls,
+the extract-min calls may take much longer because they are picking up more work.
+This doesn’t happen in most use cases since generally a large part of the heap will be
+drained in algorithms like heapsort, A*, etc.  When it’s not the case that a large part
+of the heap will be drained, a minmax heap can often be a good choice since it allows
+dropping entries that will never be used efficiently.  In particular, if the number of
+entries that will be extracted from the heap is constant and small, a minmax heap will
+probably be best.  If the number of entries that will be extracted is proportional to
+the number inserted and/or large, a fibonacci heap may be the best.</p>
+<h3 id="explanation-of-algorithms"><a class="doc-anchor" href="#explanation-of-algorithms">§</a>Explanation of Algorithms</h3>
+<p>There are two operations (extract-min and decrease-key) that are central to Fibonacci heaps,
+and all other operations are trivial.
+A Fibonacci heap consists of a collection of subheaps, each of which is a tree where
+nodes can have any number of children.  This is implemented by giving each node 4 pointers:
+its parent, its first child, its next sibling, and its previous sibling.  For the subheap roots,
+their parent is null and their next/previous siblings are instead other roots.
+Each node also stores its degree (number of chilren) and whether or not it has had a child removed.</p>
+<p>The heap itself stores a pointer to the minimal root, and the number of elements in the heap.</p>
+<p>This structure is restricted by a few invariants.  First, each node is less than or equal to
+all of its children according to the heap comparison function.  Second, the total size of a
+subheap whose root has k children is at least F_(k+2), where F_k is the kth Fibonacci number,
+with F_1 = F_2 = 1, F_3 = 2, F_4 = 3, etc.</p>
+<p>When extract-min is called, first we remove the minimal root.
+Then we iterate over the roots of all other subheaps, plus the children of the removed root,
+placing them into an array with O(logn) elements.
+Each such node goes into the index in the array corresponding to its degree.  If there is already a subheap there,
+we instead remove that subheap, merge it with the current one, and keep going.  When we merge the subheaps,
+the one with the larger root is added as a child of the one with the smaller root, so the degree of the latter goes
+up and then we try to put it in the next corresponding index in the array, repeating until we reach a degree that
+isn’t in the array yet.</p>
+<p>At the end, this gives us an array of subheaps with distinct degrees.
+We re-link these into a double circularly linked list, and update the minimal root pointer to point to the minimal one.</p>
+<p>If all subheaps obey the <code>size &gt;= F_(degree + 2)</code> invariant before <code>extract-min</code>, they will also obey it after.</p>
+<p>If there are two or fewer nodes in the heap before we extract-min, we can optimize by not merging subheaps and just
+setting the new minimal root to either the one remaining node or null.</p>
+<p>When decrease-key is called, if the key is still greater than or equal to the parent’s key, or the node is
+a root node and the key is still greater than or equal to the minimal root, or the root node is the minimal root,
+there is nothing to be done.  If the node is a root node but not the minimal root and the key becomes
+less than the minimal heap, update the minimal heap.</p>
+<p>Finally, if the key is now less than the parent’s key, remove the node from its sibling list and as a child of its parent.
+Add it as a new subeap.  If the parent was not marked as already having a child removed, mark it as such
+and then remove it as well, repeating for any remaining parents.  However, root nodes need not be marked as such.</p>
+<p>This marking is needed to ensure that the <code>size &gt;= F_(degree + 2)</code> invariant does not break</p>
+<p>Insert and meld just require adding a new subheap with one element, and stitching together the subheap root linked lists,
+respectively.</p>
+<p>Find-min just requires inspecting the min_root pointer.</p>
+<h3 id="further-reading"><a class="doc-anchor" href="#further-reading">§</a>Further Reading</h3>
+<p>[https://en.wikipedia.org/wiki/Fibonacci_heap]
+[https://youtu.be/6JxvKfSV9Ns]</p>
+<p>A very popular priority queue crate.  This crate implements priority queues using a hash table to allow key-indexed node
+access, and builds the priority queue on top of its internal hash table.  It has a good api and is a good choice most of
+the time.  Crater has some advantages over this crate: our fib heap allows building priority queues with any backing
+store, eg KD trees, vectors, just putting each node in <code>Box</code>, etc; and references to nodes have generous lifetimes,
+so storing references instead of keys is possible and makes lookup as fast as possible.  However, unless you need these
+features, this crate is a better choice than Crater.
+[https://crates.io/crates/priority-queue]</p>
+</div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.FibHeap.html" title="struct crater::fheap::FibHeap">FibHeap</a></div><div class="desc docblock-short">A fibonacci heap is a type of data structure optimized for use as a priority queue.
+It is commonly useful in pathfinding algorithms like Dijkstra’s and A*.
+Fib heaps have the following amortized time complexities:</div></li><li><div class="item-name"><a class="struct" href="struct.RawNode.html" title="struct crater::fheap::RawNode">RawNode</a></div><div class="desc docblock-short">The intrusive struct itself that should be embedded in any types that
+implement <a href="trait.Node.html" title="trait crater::fheap::Node"><code>Node</code></a>.  See <a href="struct.FibHeap.html" title="struct crater::fheap::FibHeap"><code>FibHeap</code></a> for more information.</div></li></ul><h2 id="traits" class="section-header">Traits<a href="#traits" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.Node.html" title="trait crater::fheap::Node">Node</a></div><div class="desc docblock-short">Any struct can be used as the fib heap element simply by embedding a <a href="struct.RawNode.html" title="struct crater::fheap::RawNode"><code>RawNode</code></a>
+in it (or wrapping it in a struct containing a raw node) and implementing this trait.</div></li></ul></section></div></main></body></html>

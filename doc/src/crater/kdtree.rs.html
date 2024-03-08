@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/kdtree.rs`."><title>kdtree.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (d18480b84 2024-03-04)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-12cf3b4f4f9dc36d.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/kdtree.rs`."><title>kdtree.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-e935ef01ae1c1829.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="crater" data-themes="" data-resource-suffix="" data-rustdoc-version="1.78.0-nightly (9c3ad802d 2024-03-07)" data-channel="nightly" data-search-js="search-dd67cee4cfa65049.js" data-settings-js="settings-4313503d2e1961c2.js" ><script src="../../static.files/storage-4c98445ec4002617.js"></script><script defer src="../../static.files/src-script-e66d777a5a92e9b2.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-12cf3b4f4f9dc36d.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-04d5337699b92874.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title">
             <h2>Files</h2></div></nav><div class="sidebar-resizer"></div>
     <main><nav class="sub"><form class="search-form"><span></span><div id="sidebar-button" tabindex="-1"><a href="../../crater/all.html" title="show sidebar"></a></div><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" tabindex="-1"><a href="../../help.html" title="help">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
@@ -494,15 +494,15 @@
 
 <span class="kw">use crate</span>::{get_bounds, mmheap::MmHeap, KdPoint, KdRegion, WalkDecision};
 
-<span class="doccomment">/// Represents an inner / outer limit for a query within the tree (`KdTree::k_closest`).
-/// See `QueryOptions` for more info
+<span class="doccomment">/// Represents an inner / outer limit for a query within the tree ([`KdTree::k_closest`]).
+/// See [`QueryOptions`] for more info
 </span><span class="kw">pub enum </span>QueryBound&lt;<span class="lifetime">'a</span>, R: KdRegion&gt; {
     SqDist(&lt;R::Point <span class="kw">as </span>KdPoint&gt;::Distance),
     Region(<span class="kw-2">&amp;</span><span class="lifetime">'a </span>R),
     <span class="prelude-val">None
 </span>}
 
-<span class="doccomment">/// Fine grained control over a query within the tree (`KdTree::k_closest`).
+<span class="doccomment">/// Fine grained control over a query within the tree ([`KdTree::k_closest`]).
 </span><span class="kw">pub struct </span>QueryOptions&lt;<span class="lifetime">'a</span>, R: KdRegion&gt; {
     <span class="doccomment">/// Points within this bound will be EXCLUDED from the query result.
     /// Points ON the inner boundary will also be EXCLUDED (ie the excluded region is a closed set).
@@ -512,7 +512,7 @@
     /// For `QueryBound::SqDist(d)`, this means points whose sqdist from the query point is &lt;= d will be excluded.
     /// Since the query point itself is included by default if it is in the tree, passing `QueryBound::SqDist(Distance::zero())`
     /// here can be used to exclude it.
-    /// For `QueryBound::Region(&amp;r)`, this means points within r (where r.min_sqdist is Distance::zero()) will excluded.
+    /// For `QueryBound::Region(&amp;r)`, this means points within `r` (where `r.min_sqdist` is `Distance::zero()`) will excluded.
     /// NB this cannot be conservative like an unbounded search.
     /// That is, if `R::min_sqdist` can be an underestimate, then `QueryBound::Region` should not be used.
     /// For `QueryBound::None`, no points will be excluded for being "too close" to the query point.
@@ -522,7 +522,7 @@
     /// This makes the overall included region a half open set, excluding the inner bound but including
     /// the outer bound.  This is to make it easy to have successive queries cover additional area without duplicate results.
     /// For `QueryBound::SqDist(d)`, points whose sqdist from the query point is &gt; d will be excluded.
-    /// For `QueryBount::Region(&amp;r)`, points outside r (where r.min_sqdist is not Distance::zero()) will be excluded.
+    /// For `QueryBount::Region(&amp;r)`, points outside `r` (where `r.min_sqdist` is not `Distance::zero()`) will be excluded.
     /// Unlike the inner bound, this will work correctly with a conservative `R::min_sqdist` (ie if min_sqdist is an underestimate
     /// it can only cause the result to include extra points, not miss points that should be included).
     /// For `QueryBound::None`, no points will be excluded for being "too far" from the query point.
@@ -531,16 +531,16 @@
     /// but exactly k points will be returned.
     /// If true, if multiple points are tied for being the kth closest, all of them will be returned,
     /// and more than k points will be returned in this case.
-    /// Setting this to true is necessary to correctly call `k_closest` with an iteratively increasing sampling
+    /// Setting this to true is necessary to correctly call [`KdTree::k_closest`] with an iteratively increasing sampling
     /// radius.
     </span><span class="kw">pub </span>keep_ties: bool
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">'a</span>, R: KdRegion&gt; QueryOptions&lt;<span class="lifetime">'a</span>, R&gt; {
-    <span class="doccomment">/// Default QueryOptions to have the included region be the entire tree,
+    <span class="doccomment">/// Default `QueryOptions` to have the included region be the entire tree,
     /// and return all points which are tied for being the kth-closest
     </span><span class="kw">pub const </span>ALL_KEEP_TIES: <span class="self">Self </span>= <span class="self">Self</span>{inner_bound: QueryBound::None, outer_bound: QueryBound::None, keep_ties: <span class="bool-val">true</span>};
-    <span class="doccomment">/// Default QueryOptions to have the included region be the entire tree,
+    <span class="doccomment">/// Default `QueryOptions` to have the included region be the entire tree,
     /// and arbitrarily break ties for the kth-closest point so no more than k points are ever returned.
     </span><span class="kw">pub const </span>ALL_NO_TIES: <span class="self">Self </span>= <span class="self">Self</span>{inner_bound: QueryBound::None, outer_bound: QueryBound::None, keep_ties: <span class="bool-val">false</span>};
     <span class="doccomment">/// Returns true if the included region contains the point `pt`, where `point` is the center of the query,
@@ -563,7 +563,7 @@
     /// this function will return true in cases where the query region and `bounds` can't
     /// actually contain any additional points in the result set.
     /// However, when this function returns false, the query region will always be disjoint from `bounds`,
-    /// UNLESS self.inner_bound is not `QueryBound::None` and a conservative implementation is used for KdRegion.
+    /// UNLESS `self.inner_bound` is not `QueryBound::None` and a conservative implementation is used for [`KdRegion`].
     </span><span class="kw">pub fn </span>might_overlap(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span>R::Point, max_sqdist: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>&lt;R::Point <span class="kw">as </span>KdPoint&gt;::Distance&gt;, bounds: <span class="kw-2">&amp;</span>R) -&gt; bool {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(d) = max_sqdist {
             <span class="kw">match </span>bounds.min_sqdist(point).cmp(d) {
@@ -612,7 +612,7 @@
 	<span class="doccomment">/// Iterate over all point, value pairs in the tree in depth first order,
 	/// calling a visitor function on each.  The visitor function gets a const reference
 	/// to the point, the value, and the bounds of the subtree corresponding to the point,
-	/// and may return a WalkDecision to instruct the traversal to skip the
+	/// and may return a [`WalkDecision`] to instruct the traversal to skip the
 	/// subtree or to stop the traversal entirely.
     </span><span class="kw">pub fn </span>walk&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="self">self</span>, visitor: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>R, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>R::Point, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>V) -&gt; WalkDecision) {
         <span class="kw">let </span><span class="prelude-val">Some</span>(bounds) = <span class="self">self</span>.bounds.clone() <span class="kw">else </span>{ <span class="kw">return </span>};
@@ -637,7 +637,7 @@
     /// calling a visitor function on each.  The visitor function gets a mutable reference
     /// to the value, but a const reference
 	/// to the point and the bounds of the subtree corresponding to the point,
-	/// and may return a WalkDecision to instruct the traversal to skip the
+	/// and may return a [`WalkDecision`] to instruct the traversal to skip the
 	/// subtree or to stop the traversal entirely.
     </span><span class="kw">pub fn </span>walk_mut&lt;<span class="lifetime">'a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">'a </span><span class="kw-2">mut </span><span class="self">self</span>, visitor: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>R, <span class="kw-2">&amp;</span><span class="lifetime">'a </span>R::Point, <span class="kw-2">&amp;mut </span>V) -&gt; WalkDecision) {
         <span class="kw">let </span><span class="prelude-val">Some</span>(bounds) = <span class="self">self</span>.bounds.clone() <span class="kw">else </span>{ <span class="kw">return </span>};
@@ -762,7 +762,7 @@
 
     <span class="doccomment">/// Convert a const reference to a point in the tree into an internal index.
     /// This function is unsafe because it can't be used productively without
-    /// `launder_idx`.  `ent` MUST be a reference to one of the points actually stored in
+    /// [`Self::launder_idx_mut`].  `ent` MUST be a reference to one of the points actually stored in
     /// the tree, NOT an identical point elsewhere, or this function invokes undefined behavior.
     </span><span class="kw">pub unsafe fn </span>launder_point_ref(<span class="kw-2">&amp;</span><span class="self">self</span>, ent: <span class="kw-2">&amp;</span>R::Point) -&gt; usize {
         (ent <span class="kw">as </span><span class="kw-2">*const </span>R::Point <span class="kw">as </span><span class="kw-2">*const </span>(R::Point, V))
@@ -771,7 +771,7 @@
 
     <span class="doccomment">/// Convert a const reference to a value in the tree into an internal index.
     /// This function is unsafe because it can't be used productively without
-    /// `launder_idx`.  `ent` MUST be a reference to one of the values actually stored in
+    /// [`Self::launder_idx_point`].  `ent` MUST be a reference to one of the values actually stored in
     /// the tree, NOT an identical point elsewhere, or this function invokes undefined behavior.
     </span><span class="kw">pub unsafe fn </span>launder_value_ref(<span class="kw-2">&amp;</span><span class="self">self</span>, ent: <span class="kw-2">&amp;</span>V) -&gt; usize {
         ((ent <span class="kw">as </span><span class="kw-2">*const </span>V).byte_sub(<span class="macro">mem::offset_of!</span>((R::Point, V), <span class="number">1</span>))
@@ -780,7 +780,7 @@
     }
 
     <span class="doccomment">/// Convert an internal index into a reference to a point in the tree.
-    /// The internal index must have come from `launder_point_ref` or `launder_value_ref`
+    /// The internal index must have come from [`Self::launder_point_ref`] or [`Self::launder_value_ref`]
     /// called on the same tree.
     /// The intent of this function is to allow finding the points corresponding to values
     /// given a value reference, like for example if some of the values are made into
@@ -790,7 +790,7 @@
     </span>}
 
     <span class="doccomment">/// Convert an internal index into a mutable reference to a value in the tree.
-    /// The internal index must have come from `launder_point_ref` or `launder_value_ref`
+    /// The internal index must have come from [`Self::launder_point_ref`] or [`Self::launder_value_ref`]
     /// called on the same tree.
     /// The intent of this function is to allow mutating the values of the points in the
     /// result set of `k_closest` etc.
