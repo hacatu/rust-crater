@@ -1,6 +1,6 @@
 //! Very Generic Data Structures
 //!
-//! Rust-Crater provides KD Trees and minmax heaps with as much flexibility as possible.
+//! Crater provides KD Trees, minmax heaps, and intrusive Fibonacci heaps with as much flexibility as possible.
 //! For KD Trees, no restrictions are placed on the data besides that points
 //! have well defined distance to regions/other points, and regions can be expanded/split.
 //! Similarly, minmax heaps accept any comparison function.

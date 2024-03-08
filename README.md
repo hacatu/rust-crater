@@ -17,12 +17,31 @@ The difference is my `vec_partition_with_median` is a three way partitioning fun
 the vector into `<`, `=`, and `>` regions, but this is actually overkill for KD Trees, which were the
 primary focus here.
 
-Currently, this library implements VERY generic KD Trees and a minmax heap.
+Currently, this library implements VERY generic KD Trees, Fibonacci heaps, and minmax heaps.
 
 There are some good KD Tree libraries already available for rust, but none of them are sufficiently generic
 for my needs.  For simple 2D/3D KD Trees with ints/floats, other libraries currently offer more
 functionality.  For KD Trees that don't live in Cartesian space or have exotic scalar types, this library
 is likely a good choice.
+
+[Kiddo](https://crates.io/crates/kiddo) is a very popular KD tree library for Rust, it is very fast but it
+also has some very extreme shortcomings (Only float coordinates are well supported, integral coordinates
+have diminished functionality like not supporting immutable trees, not supporting `n_nearest_within`,
+and requiring obsequeous wrapping with `Fixed` types; query bounds are EXCLUSIVE which is not documented,
+and the query functionality is not as featureful as our `k_closest` (only k closest OR all within are
+supported generally, inner bounds are never supported, region bounds and queries are not supported),
+points cannot be retrieved from the tree forcing data duplication, the tree cannot be used as a map without
+manually creating a separate vector, there are several redundant generic arguments).
+
+[kd-tree](https://crates.io/crates/kd-tree) is another very popular KD tree library.  Unlike `Kiddo` it
+does not claim to be the fastest, and also unlike `Kiddo` it appears to have a very usable and flexible
+API.  It supports generic point types, though not generic topologies, and it also has support for
+popular performance libraries `Rayon` and `nalgebra` built in.
+
+[This crate](https://crates.io/crates/priority-queue) is a good choice for priority queues if you don't
+need the advanced flexibilty of this crate's Fib heaps or need a more widely adopted and supported library.
+Our Fib heaps are pretty low level and best suited to implementing other libraries on top of, as they were
+created with performing `A*` on KD trees in mind.
 
 ## Features
 
@@ -64,11 +83,11 @@ There are also default implementations of these provided for Cartesian KD trees 
 (almost) any coordinate type (must be `Ord + NumRef + Clone`): `CuPoint` and `CuRegion`.
 
 ## External Crates:
-  `num-traits`: This crate is certainly no Numerical Prelude (Haskall), but it's an aboslute godsend for making
+  `num-traits`: This crate is certainly no Numerical Prelude (Haskell), but it's an aboslute godsend for making
   mathematically generic traits without having to put 200+ type bounds relating to overloading numeric operators
   for different permutations of reference types.  Basically impossible to overload these opertors without it.
   `rand`: It's extremely weird that C++ has a builtin rand library but Rust doesn't. Rust typically makes
   much better decisions with what should and shouldn't enter the language.  That said, this random number
-  crate is INSANELY powerful and good, even moreso than Quickcheck (Haskall).  Overloading the `Uniform`
+  crate is INSANELY powerful and good, even moreso than Quickcheck (Haskell).  Overloading the `Uniform`
   random distribution to generate `CuPoint<T, N>` generically took like 30 seconds.
 

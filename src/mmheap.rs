@@ -1,11 +1,17 @@
 use std::cmp::{max, Ordering};
 
 /// An implicit binary heap that can efficiently find the min or max of its contained elements.
-/// - Find min / find max: O(1)
-/// - Pop min / pop max: O(log(n))
-/// - Push: O(log(n))
-/// - Heapify: O(n)
-/// The comparison function can be changed after creation by just calling MmHeap::ify_by again.
+/// - Find min / find max: `O(1)`
+/// - Pop min / pop max: `O(log(n))`
+/// - Push: `O(log(n))`
+/// - Heapify: `O(n)`
+/// The comparison function can be changed after creation by just calling [`MmHeap::ify_by`] again.
+/// Rust's standard [`std::collections::BinaryHeap`] claims an `O(1)` average complexity for push,
+/// but as it notes in the documentation this is amortized over a randomly ordered sequence.
+/// This heap is also a binary heap so for a randomly ordered sequence it could also be considered `O(1)`,
+/// but for this, the standard binary heap, and indeed any binary heap, the worst case insertion time
+/// is `O(logn)`.  Also, when a min (or minmax) heap is used to find the `m` largest elements in a large sequence of `n > m`
+/// elements or visa versa, the expected cost of insertion drops from `1 - m/2^m` to ... even lower.
 pub struct MmHeap<T> {
     buf: Vec<T>
 }
@@ -30,7 +36,7 @@ impl<T> MmHeap<T> {
 
 	/// Reorder the heap according to a new comparison function.
 	/// It's impossible to add to the heap's private buffer directly, so this is only necessary
-	/// when changing the comparison function.  When calling MmHeap::push etc with the same comparison
+	/// when changing the comparison function.  When calling [`Self::push_by`] etc with the same comparison
 	/// function, the heap will maintain its invariant
     pub fn ify_by(&mut self, cmp: &impl Fn(&T, &T) -> Ordering) {
         let nonleaf_idx_upper_bound = (usize::MAX >> 1) >> self.buf.len().leading_zeros();
@@ -140,7 +146,7 @@ impl<T> MmHeap<T> {
     }
 
 	/// Insert a new element and remove the min element in the resulting heap in a single operation
-	/// Could be faster than MmHeap::push_by + MmHeap::pop_min_by separately
+	/// Could be faster than [`Self::push_by`]` + [`Self::pop_min_by`] separately
 	/// (the current implementation is only more efficient if the heap is empty, but it will always
 	/// be at least as good)
     pub fn pushpop_min_by(&mut self, e: T, cmp: &impl Fn(&T, &T) -> Ordering) -> T {
@@ -158,6 +164,9 @@ impl<T> MmHeap<T> {
         }
     }
 
+    /// Add all elements yielded from an iterator
+    /// This is the same functionality provided by the [`Extend`] trait, except we need an additional
+    /// argument (cmp) so we cannot implement that trait
     pub fn extend_by<U: IntoIterator<Item=T>>(&mut self, iter: U, cmp: &impl Fn(&T, &T) -> Ordering) {
         for x in iter {
             self.push_by(x, cmp)

@@ -4,15 +4,15 @@ use num_traits::Zero;
 
 use crate::{get_bounds, mmheap::MmHeap, KdPoint, KdRegion, WalkDecision};
 
-/// Represents an inner / outer limit for a query within the tree (`KdTree::k_closest`).
-/// See `QueryOptions` for more info
+/// Represents an inner / outer limit for a query within the tree ([`KdTree::k_closest`]).
+/// See [`QueryOptions`] for more info
 pub enum QueryBound<'a, R: KdRegion> {
     SqDist(<R::Point as KdPoint>::Distance),
     Region(&'a R),
     None
 }
 
-/// Fine grained control over a query within the tree (`KdTree::k_closest`).
+/// Fine grained control over a query within the tree ([`KdTree::k_closest`]).
 pub struct QueryOptions<'a, R: KdRegion> {
     /// Points within this bound will be EXCLUDED from the query result.
     /// Points ON the inner boundary will also be EXCLUDED (ie the excluded region is a closed set).
@@ -22,7 +22,7 @@ pub struct QueryOptions<'a, R: KdRegion> {
     /// For `QueryBound::SqDist(d)`, this means points whose sqdist from the query point is <= d will be excluded.
     /// Since the query point itself is included by default if it is in the tree, passing `QueryBound::SqDist(Distance::zero())`
     /// here can be used to exclude it.
-    /// For `QueryBound::Region(&r)`, this means points within r (where r.min_sqdist is Distance::zero()) will excluded.
+    /// For `QueryBound::Region(&r)`, this means points within `r` (where `r.min_sqdist` is `Distance::zero()`) will excluded.
     /// NB this cannot be conservative like an unbounded search.
     /// That is, if `R::min_sqdist` can be an underestimate, then `QueryBound::Region` should not be used.
     /// For `QueryBound::None`, no points will be excluded for being "too close" to the query point.
@@ -32,7 +32,7 @@ pub struct QueryOptions<'a, R: KdRegion> {
     /// This makes the overall included region a half open set, excluding the inner bound but including
     /// the outer bound.  This is to make it easy to have successive queries cover additional area without duplicate results.
     /// For `QueryBound::SqDist(d)`, points whose sqdist from the query point is > d will be excluded.
-    /// For `QueryBount::Region(&r)`, points outside r (where r.min_sqdist is not Distance::zero()) will be excluded.
+    /// For `QueryBount::Region(&r)`, points outside `r` (where `r.min_sqdist` is not `Distance::zero()`) will be excluded.
     /// Unlike the inner bound, this will work correctly with a conservative `R::min_sqdist` (ie if min_sqdist is an underestimate
     /// it can only cause the result to include extra points, not miss points that should be included).
     /// For `QueryBound::None`, no points will be excluded for being "too far" from the query point.
@@ -41,16 +41,16 @@ pub struct QueryOptions<'a, R: KdRegion> {
     /// but exactly k points will be returned.
     /// If true, if multiple points are tied for being the kth closest, all of them will be returned,
     /// and more than k points will be returned in this case.
-    /// Setting this to true is necessary to correctly call `k_closest` with an iteratively increasing sampling
+    /// Setting this to true is necessary to correctly call [`KdTree::k_closest`] with an iteratively increasing sampling
     /// radius.
     pub keep_ties: bool
 }
 
 impl<'a, R: KdRegion> QueryOptions<'a, R> {
-    /// Default QueryOptions to have the included region be the entire tree,
+    /// Default `QueryOptions` to have the included region be the entire tree,
     /// and return all points which are tied for being the kth-closest
     pub const ALL_KEEP_TIES: Self = Self{inner_bound: QueryBound::None, outer_bound: QueryBound::None, keep_ties: true};
-    /// Default QueryOptions to have the included region be the entire tree,
+    /// Default `QueryOptions` to have the included region be the entire tree,
     /// and arbitrarily break ties for the kth-closest point so no more than k points are ever returned.
     pub const ALL_NO_TIES: Self = Self{inner_bound: QueryBound::None, outer_bound: QueryBound::None, keep_ties: false};
     /// Returns true if the included region contains the point `pt`, where `point` is the center of the query,
@@ -73,7 +73,7 @@ impl<'a, R: KdRegion> QueryOptions<'a, R> {
     /// this function will return true in cases where the query region and `bounds` can't
     /// actually contain any additional points in the result set.
     /// However, when this function returns false, the query region will always be disjoint from `bounds`,
-    /// UNLESS self.inner_bound is not `QueryBound::None` and a conservative implementation is used for KdRegion.
+    /// UNLESS `self.inner_bound` is not `QueryBound::None` and a conservative implementation is used for [`KdRegion`].
     pub fn might_overlap(&self, point: &R::Point, max_sqdist: Option<&<R::Point as KdPoint>::Distance>, bounds: &R) -> bool {
         if let Some(d) = max_sqdist {
             match bounds.min_sqdist(point).cmp(d) {
@@ -122,7 +122,7 @@ impl<R: KdRegion, V> KdTree<R, V> {
 	/// Iterate over all point, value pairs in the tree in depth first order,
 	/// calling a visitor function on each.  The visitor function gets a const reference
 	/// to the point, the value, and the bounds of the subtree corresponding to the point,
-	/// and may return a WalkDecision to instruct the traversal to skip the
+	/// and may return a [`WalkDecision`] to instruct the traversal to skip the
 	/// subtree or to stop the traversal entirely.
     pub fn walk<'a>(&'a self, visitor: &mut impl FnMut(&R, &'a R::Point, &'a V) -> WalkDecision) {
         let Some(bounds) = self.bounds.clone() else { return };
@@ -147,7 +147,7 @@ impl<R: KdRegion, V> KdTree<R, V> {
     /// calling a visitor function on each.  The visitor function gets a mutable reference
     /// to the value, but a const reference
 	/// to the point and the bounds of the subtree corresponding to the point,
-	/// and may return a WalkDecision to instruct the traversal to skip the
+	/// and may return a [`WalkDecision`] to instruct the traversal to skip the
 	/// subtree or to stop the traversal entirely.
     pub fn walk_mut<'a>(&'a mut self, visitor: &mut impl FnMut(&R, &'a R::Point, &mut V) -> WalkDecision) {
         let Some(bounds) = self.bounds.clone() else { return };
@@ -272,7 +272,7 @@ impl<R: KdRegion, V> KdTree<R, V> {
 
     /// Convert a const reference to a point in the tree into an internal index.
     /// This function is unsafe because it can't be used productively without
-    /// `launder_idx`.  `ent` MUST be a reference to one of the points actually stored in
+    /// [`Self::launder_idx_mut`].  `ent` MUST be a reference to one of the points actually stored in
     /// the tree, NOT an identical point elsewhere, or this function invokes undefined behavior.
     pub unsafe fn launder_point_ref(&self, ent: &R::Point) -> usize {
         (ent as *const R::Point as *const (R::Point, V))
@@ -281,7 +281,7 @@ impl<R: KdRegion, V> KdTree<R, V> {
 
     /// Convert a const reference to a value in the tree into an internal index.
     /// This function is unsafe because it can't be used productively without
-    /// `launder_idx`.  `ent` MUST be a reference to one of the values actually stored in
+    /// [`Self::launder_idx_point`].  `ent` MUST be a reference to one of the values actually stored in
     /// the tree, NOT an identical point elsewhere, or this function invokes undefined behavior.
     pub unsafe fn launder_value_ref(&self, ent: &V) -> usize {
         ((ent as *const V).byte_sub(mem::offset_of!((R::Point, V), 1))
@@ -290,7 +290,7 @@ impl<R: KdRegion, V> KdTree<R, V> {
     }
 
     /// Convert an internal index into a reference to a point in the tree.
-    /// The internal index must have come from `launder_point_ref` or `launder_value_ref`
+    /// The internal index must have come from [`Self::launder_point_ref`] or [`Self::launder_value_ref`]
     /// called on the same tree.
     /// The intent of this function is to allow finding the points corresponding to values
     /// given a value reference, like for example if some of the values are made into
@@ -300,7 +300,7 @@ impl<R: KdRegion, V> KdTree<R, V> {
     }
 
     /// Convert an internal index into a mutable reference to a value in the tree.
-    /// The internal index must have come from `launder_point_ref` or `launder_value_ref`
+    /// The internal index must have come from [`Self::launder_point_ref`] or [`Self::launder_value_ref`]
     /// called on the same tree.
     /// The intent of this function is to allow mutating the values of the points in the
     /// result set of `k_closest` etc.
