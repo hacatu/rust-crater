@@ -1,6 +1,6 @@
 [package]
 name = "crater"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["hacatu <hacatu5000@gmail.com>"]
 description = "Very generic containers including KD trees, fibonacci heaps, minmax heaps, ..."
