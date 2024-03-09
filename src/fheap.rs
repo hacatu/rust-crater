@@ -104,8 +104,8 @@
 //! Find-min just requires inspecting the min_root pointer.
 //! 
 //! ## Further Reading
-//! [https://en.wikipedia.org/wiki/Fibonacci_heap]
-//! [https://youtu.be/6JxvKfSV9Ns]
+//! [Wikipedia](https://en.wikipedia.org/wiki/Fibonacci_heap)
+//! [3b1b style video by SithDev](https://youtu.be/6JxvKfSV9Ns)
 //! 
 //! A very popular priority queue crate.  This crate implements priority queues using a hash table to allow key-indexed node
 //! access, and builds the priority queue on top of its internal hash table.  It has a good api and is a good choice most of
@@ -113,7 +113,7 @@
 //! store, eg KD trees, vectors, just putting each node in `Box`, etc; and references to nodes have generous lifetimes,
 //! so storing references instead of keys is possible and makes lookup as fast as possible.  However, unless you need these
 //! features, this crate is a better choice than Crater.
-//! [https://crates.io/crates/priority-queue]
+//! [priority-queue](https://crates.io/crates/priority-queue)
 
 use std::{cell::UnsafeCell, cmp::Ordering, marker::PhantomData, ptr};
 
