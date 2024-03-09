@@ -85,15 +85,15 @@ and then remove it as well, repeating for any remaining parents.  However, root 
 respectively.</p>
 <p>Find-min just requires inspecting the min_root pointer.</p>
 <h3 id="further-reading"><a class="doc-anchor" href="#further-reading">§</a>Further Reading</h3>
-<p>[https://en.wikipedia.org/wiki/Fibonacci_heap]
-[https://youtu.be/6JxvKfSV9Ns]</p>
+<p><a href="https://en.wikipedia.org/wiki/Fibonacci_heap">Wikipedia</a>
+<a href="https://youtu.be/6JxvKfSV9Ns">3b1b style video by SithDev</a></p>
 <p>A very popular priority queue crate.  This crate implements priority queues using a hash table to allow key-indexed node
 access, and builds the priority queue on top of its internal hash table.  It has a good api and is a good choice most of
 the time.  Crater has some advantages over this crate: our fib heap allows building priority queues with any backing
 store, eg KD trees, vectors, just putting each node in <code>Box</code>, etc; and references to nodes have generous lifetimes,
 so storing references instead of keys is possible and makes lookup as fast as possible.  However, unless you need these
 features, this crate is a better choice than Crater.
-[https://crates.io/crates/priority-queue]</p>
+<a href="https://crates.io/crates/priority-queue">priority-queue</a></p>
 </div></details><h2 id="structs" class="section-header">Structs<a href="#structs" class="anchor">§</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.FibHeap.html" title="struct crater::fheap::FibHeap">FibHeap</a></div><div class="desc docblock-short">A fibonacci heap is a type of data structure optimized for use as a priority queue.
 It is commonly useful in pathfinding algorithms like Dijkstra’s and A*.
 Fib heaps have the following amortized time complexities:</div></li><li><div class="item-name"><a class="struct" href="struct.RawNode.html" title="struct crater::fheap::RawNode">RawNode</a></div><div class="desc docblock-short">The intrusive struct itself that should be embedded in any types that

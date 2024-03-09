@@ -127,15 +127,15 @@
 <a href="#125" id="125">125</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Very Generic Data Structures
 //!
-//! Crater provides KD Trees, minmax heaps, and intrusive Fibonacci heaps with as much flexibility as possible.
+//! Crater provides KD Trees ([`kdtree::KdTree`]), minmax heaps ([`mmheap::MmHeap`]), and intrusive Fibonacci heaps ([`fheap::FibHeap`]) with as much flexibility as possible.
 //! For KD Trees, no restrictions are placed on the data besides that points
 //! have well defined distance to regions/other points, and regions can be expanded/split.
 //! Similarly, minmax heaps accept any comparison function.
 //!
-//! To get started quickly, look at CuPoint and CuRegion and the tests in cuboid::pointcloud.
+//! To get started quickly, look at [`cuboid::CuPoint`] and [`cuboid::CuRegion`] and the tests in [`cuboid::tests::pointcloud`].
 //! This will provide an overview of how to use KD trees with the prebuilt Cartesian points/regions.
-//! To associate custom data to points, create structs wrapping CuPoint and CuRegion which delegate to their KdPoint
-//! and KdRegion implementations.  To implement KdPoint and KdRegion for arbitrary custom types,
+//! To associate custom data to points, create structs wrapping [`cuboid::CuPoint`] and [`cuboid::CuRegion`] which delegate to their [`KdPoint`]
+//! and [`KdRegion`] implementations.  To implement [`KdPoint`] and [`KdRegion`] for arbitrary custom types,
 //! continue reading their trait documentation here.
 </span><span class="attr">#![feature(split_at_checked, allocator_api, non_null_convenience, slice_ptr_get)]
 
@@ -176,31 +176,31 @@
 }
 
 <span class="doccomment">/// A region in the tree, or in space in general.  A type implementing this will be tightly
-/// coupled to some type implementing KdPoint.  For example, the prebuilt CuPoint struct
-/// represents a point in Cartesian space with Euclidean distance, and the prebuilt CuRegion
+/// coupled to some type implementing [`KdPoint`].  For example, the prebuilt [`cuboid::CuPoint`] struct
+/// represents a point in Cartesian space with Euclidean distance, and the prebuilt [`cuboid::CuRegion`]
 /// struct represents cuboid regions of space (rectangles in 2D, rectangular prisms in 3D, etc).
 /// Regions often represent infinitely many points in space (how many points are in your
 /// typical rectangle?).  Regions should be able to represent a single point, but the ability
 /// to represent an empty region isn't necessary.
 </span><span class="kw">pub trait </span>KdRegion: Sized + Clone {
     <span class="kw">type </span>Point: KdPoint;
-    <span class="doccomment">/// Given a point p in this region A and a layer l, split A into two subregions B and C so that:
-    /// - Any point q in A is in B or C, that is, if A.min_sqdist(q) = 0, then either B.min_sqdist(q) = 0
-    ///   or C.min_sqdist(q) = 0 (possibly both).  Note that strictly speaking this only *needs* to be
+    <span class="doccomment">/// Given a point `p` in this region `A` and a layer `l`, split `A` into two subregions `B` and `C` so that:
+    /// - Any point `q` in `A` is in `B` or `C`, that is, if `A.min_sqdist(q) == 0`, then either `B.min_sqdist(q) == 0`
+    ///   or `C.min_sqdist(q) == 0` (possibly both).  Note that strictly speaking this only *needs* to be
     ///   true over all points in the tree, not all points in space, but in practice it is almost always
     ///   much easier to make this true for all points in space, not least because this trait and
     ///   method have no reference to any particular KD tree.
-    /// - Any point q in B is &lt;= than p in layer l, using KdPoint::cmp, and any point in C is &gt;=
-    /// - Any point not in A should hopefully be farther from B than from C (or visa versa) in at least
+    /// - Any point `q` in `B` is `&lt;= p` in layer `l`, using [`KdPoint::cmp`], and any point `q` in `C` is `&gt;= p`
+    /// - Any point not in `A` should hopefully be farther from `B` than from `C` (or visa versa) in at least
     ///   some layers (note that distance doesn't depend on layer, but split direction does).
-    ///   That is, if A.min_dist(q) = d &gt; 0, then B.min_sqdist(q), C.min_sqdist(q) &gt;= d (are both at least d),
+    ///   That is, if `A.min_dist(q) == d where d &gt; 0`, then `B.min_sqdist(q), C.min_sqdist(q) &gt;= d` (are both at least `d`),
     ///   and ideally one should be significantly more in at least some layers.
     /// Note how the basic instance of regions, cuboid regions, obviously obey all these properties
     </span><span class="kw">fn </span>split(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point, layer: usize) -&gt; (<span class="self">Self</span>, <span class="self">Self</span>);
     <span class="doccomment">/// Given a region and a point possibly not in the region, extend the region to include the point if
     /// necessary.  The concrete requirements this places on the implementation are that
-    /// self.min_sqdist(q) can only decrease or remain the same for any fixed q, and in particular self.extend(q)
-    /// should cause self.min_sqdist(q) to be 0 if it wasn't already
+    /// `self.min_sqdist(q)` can only decrease or remain the same for any fixed `q`, and in particular `self.extend(q)`
+    /// should cause `self.min_sqdist(q)` to be `0` if it wasn't already
     </span><span class="kw">fn </span>extend(<span class="kw-2">&amp;mut </span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point);
     <span class="doccomment">/// Create a region consisting of a single point.  For cuboid regions for example, this is represented as
     /// a cuboid whose inclusive "start" and "end" points are both the same.  Types implementing this trait
@@ -209,31 +209,31 @@
     /// It's not necessary for types to be able to represent an empty region well or even at all.
     </span><span class="kw">fn </span>single_point(point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) -&gt; <span class="self">Self</span>;
     <span class="doccomment">/// Return the minimal squared distance any point in this region could have to a given point.
-    /// The return value must be &lt;= KdPoint::sqdist between the given point and any point within this region.
-    /// It's safe to return a smaller value, or even always return Distance::zero(), but this degrades performance because
+    /// The return value must be `&lt;= KdPoint::sqdist` between the given point and any point within this region.
+    /// It's safe to return a smaller value, or even always return `Distance::zero()`, but this degrades performance because
     /// we can't prune subtrees from the search.
-    /// If B is a subregion of A and p is a point not in A, then B.min_sqdist(p) &gt;= A.min_sqdist(p)
+    /// If `B` is a subregion of `A` and `p` is a point not in `A`, then `B.min_sqdist(p) &gt;= A.min_sqdist(p)`
     </span><span class="kw">fn </span>min_sqdist(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) -&gt; &lt;<span class="self">Self</span>::Point <span class="kw">as </span>KdPoint&gt;::Distance;
-    <span class="doccomment">/// Return the maximal squared distance any point in this region could have to a given point, or None if infinite.
-    /// The return value must be &gt;= KdPoint::sqdist between the given point and any point within this region.
-    /// None is considered infinitely far away.  It's safe to return a larger value, or even always return None,
+    <span class="doccomment">/// Return the maximal squared distance any point in this region could have to a given point, or `None` if infinite.
+    /// The return value must be `&gt;= KdPoint::sqdist` between the given point and any point within this region.
+    /// `None` is considered infinitely far away.  It's safe to return a larger value, or even always return `None`,
     /// but this may degrade performace for some queries that cull based on minimal distance.
-    /// Currently, this only happens for `KdTree::k_closest` where QueryOptions::lower_bound is `QueryBound::SqDist`.
-    /// If B is a subregion of A and p is a point not in A, then B.max_sqdist(p) &lt;= A.max_sqdist(p).
+    /// Currently, this only happens for [`kdtree::KdTree::k_closest`] where [`kdtree::QueryOptions::lower_bound`] is [`kdtree::QueryBound::SqDist`].
+    /// If `B` is a subregion of `A` and `p` is a point not in `A`, then `B.max_sqdist(p) &lt;= A.max_sqdist(p)`.
     </span><span class="kw">fn </span>max_sqdist(<span class="kw-2">&amp;</span><span class="self">self</span>, point: <span class="kw-2">&amp;</span><span class="self">Self</span>::Point) -&gt; <span class="prelude-ty">Option</span>&lt;&lt;<span class="self">Self</span>::Point <span class="kw">as </span>KdPoint&gt;::Distance&gt;;
     <span class="doccomment">/// Return true if this region and another region might overlap, or false if they are definitely disjoint.
     /// Conservative implementors can always return true.
-    /// Currently only used by `KdTree::k_closest` if `QueryOptions::outer_bound` is `QueryBound::Region`.
+    /// Currently only used by [`kdtree::KdTree::k_closest`] if [`kdtree::QueryOptions::outer_bound`] is [`kdtree::QueryBound::Region`].
     </span><span class="kw">fn </span>might_overlap(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool;
     <span class="doccomment">/// Return true if this region is DEFINITELY a superset of another region, or false if it is not.
-    /// A may be a superset of B even if B is internally tangent to A or B is A.
+    /// `A` may be a superset of `B` even if `B` is internally tangent to `A` or `B` is `A`.
     /// May return false even if self is a superset of other, if it would be expensive or difficult to compute correctly.
-    /// Currently only used by `KdTree::k_closest` if `QueryOptions::inner_bound` is `QueryBound::Region`
+    /// Currently only used by [`kdtree::KdTree::k_closest`] if [`kdtree::QueryOptions::inner_bound`] is [`kdtree::QueryBound::Region`]
     </span><span class="kw">fn </span>is_superset(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool;
 }
 
 
-<span class="doccomment">/// Tree traversal control flow, similar to Rust's builtin ControlFlow enum.
+<span class="doccomment">/// Tree traversal control flow, similar to Rust's builtin [`std::ops::ControlFlow`] enum.
 </span><span class="kw">pub enum </span>WalkDecision {
     Continue,
     SkipChildren,
@@ -241,8 +241,8 @@
 }
 
 
-<span class="doccomment">/// Get the bounding box of a set of points.  For CuRegion and CuPoint, this will be an
-/// AABB (Axis Aligned Bounding Box).  For general KdRegion, the bounds are not required to be tight
+<span class="doccomment">/// Get the bounding box of a set of points.  For [`cuboid::CuRegion`] and [`cuboid::CuPoint`], this will be an
+/// AABB (Axis Aligned Bounding Box).  For general [`KdRegion`], the bounds are not required to be tight
 </span><span class="kw">pub fn </span>get_bounds&lt;<span class="lifetime">'a</span>, R: KdRegion&gt;(points: <span class="kw">impl </span>IntoIterator&lt;Item = <span class="kw-2">&amp;</span><span class="lifetime">'a </span>R::Point&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;R&gt; <span class="kw">where </span>R: <span class="lifetime">'a </span>{
     <span class="kw">let </span><span class="kw-2">mut </span>it = points.into_iter();
     <span class="kw">let </span><span class="kw-2">mut </span>res = R::single_point(it.next()<span class="question-mark">?</span>);

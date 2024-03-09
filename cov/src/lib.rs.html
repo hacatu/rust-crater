@@ -85,7 +85,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;! Crater provides KD Trees, minmax heaps, and intrusive Fibonacci heaps with as much flexibility as possible.</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;! Crater provides KD Trees ([`kdtree::KdTree`]), minmax heaps ([`mmheap::MmHeap`]), and intrusive Fibonacci heaps ([`fheap::FibHeap`]) with as much flexibility as possible.</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -165,7 +165,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;! To get started quickly, look at CuPoint and CuRegion and the tests in cuboid::pointcloud.</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;! To get started quickly, look at [`cuboid::CuPoint`] and [`cuboid::CuRegion`] and the tests in [`cuboid::tests::pointcloud`].</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -197,7 +197,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;! To associate custom data to points, create structs wrapping CuPoint and CuRegion which delegate to their KdPoint</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;! To associate custom data to points, create structs wrapping [`cuboid::CuPoint`] and [`cuboid::CuRegion`] which delegate to their [`KdPoint`]</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -213,7 +213,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;! and KdRegion implementations.  To implement KdPoint and KdRegion for arbitrary custom types,</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;! and [`KdRegion`] implementations.  To implement [`KdPoint`] and [`KdRegion`] for arbitrary custom types,</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -869,7 +869,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; coupled to some type implementing KdPoint.  For example, the prebuilt CuPoint struct</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; coupled to some type implementing [`KdPoint`].  For example, the prebuilt [`cuboid::CuPoint`] struct</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -885,7 +885,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; represents a point in Cartesian space with Euclidean distance, and the prebuilt CuRegion</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; represents a point in Cartesian space with Euclidean distance, and the prebuilt [`cuboid::CuRegion`]</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -997,7 +997,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Given a point p in this region A and a layer l, split A into two subregions B and C so that:</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Given a point `p` in this region `A` and a layer `l`, split `A` into two subregions `B` and `C` so that:</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1013,7 +1013,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; - Any point q in A is in B or C, that is, if A.min_sqdist(q) = 0, then either B.min_sqdist(q) = 0</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; - Any point `q` in `A` is in `B` or `C`, that is, if `A.min_sqdist(q) == 0`, then either `B.min_sqdist(q) == 0`</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1029,7 +1029,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F;   or C.min_sqdist(q) = 0 (possibly both).  Note that strictly speaking this only *needs* to be</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F;   or `C.min_sqdist(q) == 0` (possibly both).  Note that strictly speaking this only *needs* to be</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1093,7 +1093,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; - Any point q in B is &lt;= than p in layer l, using KdPoint::cmp, and any point in C is &gt;=</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; - Any point `q` in `B` is `&lt;= p` in layer `l`, using [`KdPoint::cmp`], and any point `q` in `C` is `&gt;= p`</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1109,7 +1109,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; - Any point not in A should hopefully be farther from B than from C (or visa versa) in at least</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; - Any point not in `A` should hopefully be farther from `B` than from `C` (or visa versa) in at least</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1141,7 +1141,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F;   That is, if A.min_dist(q) = d &gt; 0, then B.min_sqdist(q), C.min_sqdist(q) &gt;= d (are both at least d),</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F;   That is, if `A.min_dist(q) == d where d &gt; 0`, then `B.min_sqdist(q), C.min_sqdist(q) &gt;= d` (are both at least `d`),</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1237,7 +1237,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; self.min_sqdist(q) can only decrease or remain the same for any fixed q, and in particular self.extend(q)</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; `self.min_sqdist(q)` can only decrease or remain the same for any fixed `q`, and in particular `self.extend(q)`</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1253,7 +1253,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; should cause self.min_sqdist(q) to be 0 if it wasn&#x27;t already</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; should cause `self.min_sqdist(q)` to be `0` if it wasn&#x27;t already</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1397,7 +1397,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; The return value must be &lt;= KdPoint::sqdist between the given point and any point within this region.</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; The return value must be `&lt;= KdPoint::sqdist` between the given point and any point within this region.</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1413,7 +1413,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; It&#x27;s safe to return a smaller value, or even always return Distance::zero(), but this degrades performance because</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; It&#x27;s safe to return a smaller value, or even always return `Distance::zero()`, but this degrades performance because</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1445,7 +1445,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; If B is a subregion of A and p is a point not in A, then B.min_sqdist(p) &gt;= A.min_sqdist(p)</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; If `B` is a subregion of `A` and `p` is a point not in `A`, then `B.min_sqdist(p) &gt;= A.min_sqdist(p)`</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1477,7 +1477,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Return the maximal squared distance any point in this region could have to a given point, or None if infinite.</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Return the maximal squared distance any point in this region could have to a given point, or `None` if infinite.</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1493,7 +1493,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; The return value must be &gt;= KdPoint::sqdist between the given point and any point within this region.</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; The return value must be `&gt;= KdPoint::sqdist` between the given point and any point within this region.</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1509,7 +1509,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; None is considered infinitely far away.  It&#x27;s safe to return a larger value, or even always return None,</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; `None` is considered infinitely far away.  It&#x27;s safe to return a larger value, or even always return `None`,</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1541,7 +1541,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Currently, this only happens for `KdTree::k_closest` where QueryOptions::lower_bound is `QueryBound::SqDist`.</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Currently, this only happens for [`kdtree::KdTree::k_closest`] where [`kdtree::QueryOptions::lower_bound`] is [`kdtree::QueryBound::SqDist`].</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1557,7 +1557,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; If B is a subregion of A and p is a point not in A, then B.max_sqdist(p) &lt;= A.max_sqdist(p).</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; If `B` is a subregion of `A` and `p` is a point not in `A`, then `B.max_sqdist(p) &lt;= A.max_sqdist(p)`.</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1621,7 +1621,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Currently only used by `KdTree::k_closest` if `QueryOptions::outer_bound` is `QueryBound::Region`.</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Currently only used by [`kdtree::KdTree::k_closest`] if [`kdtree::QueryOptions::outer_bound`] is [`kdtree::QueryBound::Region`].</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1669,7 +1669,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; A may be a superset of B even if B is internally tangent to A or B is A.</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; `A` may be a superset of `B` even if `B` is internally tangent to `A` or `B` is `A`.</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1701,7 +1701,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Currently only used by `KdTree::k_closest` if `QueryOptions::inner_bound` is `QueryBound::Region`</pre>
+                <pre class="has-background-white py-0 px-2">    &#x2F;&#x2F;&#x2F; Currently only used by [`kdtree::KdTree::k_closest`] if [`kdtree::QueryOptions::inner_bound`] is [`kdtree::QueryBound::Region`]</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1781,7 +1781,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; Tree traversal control flow, similar to Rust&#x27;s builtin ControlFlow enum.</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; Tree traversal control flow, similar to Rust&#x27;s builtin [`std::ops::ControlFlow`] enum.</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1909,7 +1909,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; Get the bounding box of a set of points.  For CuRegion and CuPoint, this will be an</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; Get the bounding box of a set of points.  For [`cuboid::CuRegion`] and [`cuboid::CuPoint`], this will be an</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -1925,7 +1925,7 @@
             </div>
             <div class="column has-background-white p-0"
                  role="cell">
-                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; AABB (Axis Aligned Bounding Box).  For general KdRegion, the bounds are not required to be tight</pre>
+                <pre class="has-background-white py-0 px-2">&#x2F;&#x2F;&#x2F; AABB (Axis Aligned Bounding Box).  For general [`KdRegion`], the bounds are not required to be tight</pre>
             </div>
         </div><div class="columns p-0 m-0" role="row">
             <div
@@ -2043,7 +2043,7 @@
 </div>
         <footer class="footer">
             <div class="content has-text-centered">
-                <p class="heading">Date: 2024-03-09 01:11</p>
+                <p class="heading">Date: 2024-03-09 01:36</p>
             </div>
         </footer>
     </body>
